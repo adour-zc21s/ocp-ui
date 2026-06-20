@@ -484,6 +484,10 @@ export const links = [
     title: 'Pages',
     links: [
       {
+        name: 'accounts',
+        icon: <MdOutlineSupervisorAccount />,
+      },
+      {
         name: 'orders',
         icon: <AiOutlineShoppingCart />,
       },
