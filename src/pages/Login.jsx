@@ -143,6 +143,7 @@ const Login = () => {
         <div className="text-center mb-8">
           <h1 className="text-3xl font-extrabold text-gray-900">OCP Dash</h1>
           <p className="text-gray-600 mt-2">Welcome back</p>
+          <p className="text-gray-600 text-sm">String200!</p>
         </div>
 
         {/* Error Message */}
