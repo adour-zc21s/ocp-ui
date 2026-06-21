@@ -70,10 +70,11 @@ const Accounts = () => {
     }, []);
 
     const accountsGrid = [
-        { field: 'id', headerText: 'ID', width: '120', textAlign: 'Center' },
-        { field: 'name', headerText: 'Account Name', width: '150', textAlign: 'Center' },
-        { field: 'accountNumber', headerText: 'Account Number', width: '150', textAlign: 'Center' },
-        { field: 'email', headerText: 'Email', width: '200', textAlign: 'Center' },
+        { field: 'id', headerText: 'ID', width: '60', textAlign: 'Center' },
+        { field: 'nik', headerText: 'NIK', width: '70', textAlign: 'Center' },
+        { field: 'name', headerText: 'Account Name', width: '200', textAlign: 'Left' },
+        { field: 'accountNumber', headerText: 'Account Number', width: '140', textAlign: 'Center' },
+        { field: 'email', headerText: 'Email', width: '150', textAlign: 'Center' },
         { field: 'hp', headerText: 'Phone', width: '150', textAlign: 'Center' },
     ];
 
