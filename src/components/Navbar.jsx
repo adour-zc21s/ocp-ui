@@ -30,6 +30,11 @@ const NavButton = ({ title, customFunc, icon, color, dotColor }) => (
 const Navbar = () => {
   const { currentColor, activeMenu, setActiveMenu, handleClick, isClicked, setScreenSize, screenSize } = useStateContext();
 
+  // Get user info from localStorage
+  const user = JSON.parse(localStorage.getItem('user') || '{}');
+  const userEmail = user.email || 'User';
+  const userName = userEmail.split('@')[0] || 'User';
+
   useEffect(() => {
     const handleResize = () => setScreenSize(window.innerWidth);
 
@@ -71,7 +76,7 @@ const Navbar = () => {
             <p>
               <span className="text-gray-400 text-14">Hi,</span>{' '}
               <span className="text-gray-400 font-bold ml-1 text-14">
-                Adour
+                {userName}
               </span>
             </p>
             <MdKeyboardArrowDown className="text-gray-400 text-14" />

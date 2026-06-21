@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { MdOutlineCancel } from 'react-icons/md';
 
 import { Button } from '.';
@@ -8,6 +9,22 @@ import avatar from '../data/avatar.jpg';
 
 const UserProfile = () => {
   const { currentColor } = useStateContext();
+  const navigate = useNavigate();
+
+  // Get user info from localStorage
+  const user = JSON.parse(localStorage.getItem('user') || '{}');
+  const userEmail = user.email || 'user@example.com';
+  const userName = user.email?.split('@')[0] || 'User';
+
+  const handleLogout = () => {
+    // Clear authentication data
+    localStorage.removeItem('authToken');
+    localStorage.removeItem('user');
+    localStorage.removeItem('rememberMe');
+    
+    // Redirect to login page
+    navigate('/login', { replace: true });
+  };
 
   return (
     <div className="nav-item absolute right-1 top-16 bg-white dark:bg-[#42464D] p-8 rounded-lg w-96">
@@ -28,9 +45,9 @@ const UserProfile = () => {
           alt="user-profile"
         />
         <div>
-          <p className="font-semibold text-xl dark:text-gray-200"> Adour-zc21s </p>
-          <p className="text-gray-500 text-sm dark:text-gray-400">  Administrator   </p>
-          <p className="text-gray-500 text-sm font-semibold dark:text-gray-400"> info@shop.com </p>
+          <p className="font-semibold text-xl dark:text-gray-200">{userName}</p>
+          <p className="text-gray-500 text-sm dark:text-gray-400">User</p>
+          <p className="text-gray-500 text-sm font-semibold dark:text-gray-400">{userEmail}</p>
         </div>
       </div>
       <div>
@@ -58,6 +75,7 @@ const UserProfile = () => {
           text="Logout"
           borderRadius="10px"
           width="full"
+          customFunc={handleLogout}
         />
       </div>
     </div>

@@ -36,6 +36,14 @@ const Login = () => {
   const navigate = useNavigate();
   const { currentColor } = useStateContext();
 
+  // Check if already logged in
+  React.useEffect(() => {
+    const authToken = localStorage.getItem('authToken');
+    if (authToken) {
+      navigate('/', { replace: true });
+    }
+  }, [navigate]);
+
   const handleLogin = async (e) => {
     e.preventDefault();
     setError('');
@@ -217,25 +225,7 @@ const Login = () => {
 
         {/* Footer */}
         <div className="mt-6 text-center text-sm text-gray-500 border-t pt-4">
-          <p className="mb-2 text-xs font-semibold">API Endpoint:</p>
-          <p className="mb-3 text-xs font-mono bg-gray-100 p-2 rounded overflow-auto">
-            {REST_API_URL}
-          </p>
-          <p className="text-xs mb-3">Frontend: http://localhost:3001</p>
-          <div className="text-xs bg-yellow-50 border border-yellow-200 rounded p-2 mb-2">
-            <p className="font-semibold mb-1">If you see a CORS error:</p>
-            <p>Your backend needs to add these headers to responses:</p>
-            <code className="text-xs font-mono block mt-1">
-              Access-Control-Allow-Origin: http://localhost:3001
-            </code>
-            <code className="text-xs font-mono block">
-              Access-Control-Allow-Methods: GET, POST, PUT, DELETE
-            </code>
-            <code className="text-xs font-mono block mb-1">
-              Access-Control-Allow-Headers: Content-Type
-            </code>
-          </div>
-          <p className="text-xs text-gray-400">Check browser console (F12) for detailed error logs</p>
+          <p className="mb-2 text-xs font-semibold">Open Class Programming</p>
         </div>
       </div>
     </div>
