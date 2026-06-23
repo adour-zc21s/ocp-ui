@@ -46,7 +46,7 @@ const Accounts = () => {
                 }
                 setLoading(false);
             } catch (error) {
-                setError('Failed to load accounts, please log in again.');
+                setError('Failed to load accounts, please log out and log in again.');
                 setLoading(false);
             }
         };

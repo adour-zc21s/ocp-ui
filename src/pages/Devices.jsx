@@ -46,7 +46,7 @@ const Devices = () => {
                 }
                 setLoading(false);
             } catch (error) {
-                setError('Failed to load devices, please log in again.');
+                setError('Failed to load devices, please log out and log in again.');
                 setLoading(false);
             }
         };
@@ -84,8 +84,10 @@ const Devices = () => {
 
     const devicesGrid = [
         { field: 'id', headerText: 'ID', width: '60', textAlign: 'Center' },
-        { field: 'deviceName', headerText: 'Device Name', width: '200', textAlign: 'Left' },
+        { field: 'deviceName', headerText: 'Device Name', width: '100', textAlign: 'Left' },
         { field: 'deviceType', headerText: 'Device Type', width: '150', textAlign: 'Center' },
+        { field: 'manufacture', headerText: 'Manufacture', width: '150', textAlign: 'Center' },
+        { field: 'serialNumber', headerText: 'Serial Number', width: '150', textAlign: 'Center' },
         { 
             field: 'actions', 
             headerText: 'Actions', 
