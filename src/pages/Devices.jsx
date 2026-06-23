@@ -16,6 +16,21 @@ const Devices = () => {
     // Modal states
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedDevice, setSelectedDevice] = useState(null);
+    const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+    
+    // Form states for adding device
+    const [formData, setFormData] = useState({
+        deviceName: '',
+        deviceType: '',
+        manufacture: '',
+        serialNumber: '',
+        ipAddress: '',
+        macAddress: '',
+        user: '',
+        location: '',
+        purchaseDate: '',
+        warrantyExpired: ''
+    });
 
     const { currentColor, currentMode } = useStateContext();
 
@@ -62,6 +77,78 @@ const Devices = () => {
     const handleCloseModal = () => {
         setIsModalOpen(false);
         setSelectedDevice(null);
+    };
+
+    const handleOpenAddModal = () => {
+        setFormData({
+            deviceName: '',
+            deviceType: '',
+            manufacture: '',
+            serialNumber: '',
+            ipAddress: '',
+            macAddress: '',
+            user: '',
+            location: '',
+            purchaseDate: '',
+            warrantyExpired: ''
+        });
+        setIsAddModalOpen(true);
+    };
+
+    const handleCloseAddModal = () => {
+        setIsAddModalOpen(false);
+        setFormData({
+            deviceName: '',
+            deviceType: '',
+            manufacture: '',
+            serialNumber: '',
+            ipAddress: '',
+            macAddress: '',
+            user: '',
+            location: '',
+            purchaseDate: '',
+            warrantyExpired: ''
+        });
+    };
+
+    const handleFormChange = (e) => {
+        const { name, value } = e.target;
+        setFormData(prevState => ({
+            ...prevState,
+            [name]: value
+        }));
+    };
+
+    const handleAddDevice = async (e) => {
+        e.preventDefault();
+        try {
+            const token = localStorage.getItem('authToken');
+            if (!token) {
+                alert('No authentication token found. Please log in again.');
+                return;
+            }
+
+            // Validate required fields
+            if (!formData.deviceName || !formData.deviceType || !formData.manufacture) {
+                alert('Please fill in all required fields (Device Name, Device Type, Manufacture)');
+                return;
+            }
+
+            const response = await axios.post(REST_API_URL, formData, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                }
+            });
+
+            // Add new device to the list
+            setDeviceData(prevData => [...prevData, response.data]);
+            alert('Device added successfully');
+            handleCloseAddModal();
+        } catch (err) {
+            console.error("Add device error:", err);
+            alert(err.response?.data?.message || 'Failed to add device');
+        }
     };
 
     const handleDelete = async (rowData) => {
@@ -119,7 +206,17 @@ const Devices = () => {
 
     return (
         <div className="m-2 md:m-10 mt-24 p-2 md:p-10 bg-white rounded-3xl relative">
-            <Header category="Devices" title="All Devices" />
+            <div className="flex justify-between items-center mb-6">
+                <Header category="Devices" title="All Devices" />
+                <button
+                    type="button"
+                    style={{ backgroundColor: currentColor }}
+                    className="text-white px-4 py-2 rounded-xl hover:opacity-80 transition duration-200 font-medium"
+                    onClick={handleOpenAddModal}
+                >
+                    + Add Device
+                </button>
+            </div>
             
             {error && (
                 <div className="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
@@ -249,6 +346,199 @@ const Devices = () => {
                             </button>
                         </div>
 
+                    </div>
+                </div>
+            )}
+
+            {/* --- ADD DEVICE MODAL --- */}
+            {isAddModalOpen && (
+                <div className="fixed inset-0 z-[99999] flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm animate-fade-in">
+                    <div className="bg-white dark:bg-secondary-dark-bg w-11/12 md:w-1/2 p-6 rounded-2xl shadow-2xl border border-gray-100 transform transition-all scale-100 max-h-screen overflow-y-auto">
+                        
+                        {/* Modal Header */}
+                        <div className="flex justify-between items-center border-b pb-3 mb-4">
+                            <h3 className="text-xl font-semibold text-gray-800 dark:text-gray-200">
+                                Add New Device
+                            </h3>
+                            <button 
+                                onClick={handleCloseAddModal}
+                                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 text-2xl font-semibold"
+                            >
+                                &times;
+                            </button>
+                        </div>
+
+                        {/* Modal Form */}
+                        <form onSubmit={handleAddDevice}>
+                            {/* Identity & Classification */}
+                            <div className="mb-4">
+                                <h4 className="text-sm font-semibold mb-3 text-gray-400 dark:text-gray-200">Identity & Classification</h4>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="block text-xs text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-1">
+                                            Device Name <span className="text-red-500">*</span>
+                                        </label>
+                                        <input
+                                            type="text"
+                                            name="deviceName"
+                                            value={formData.deviceName}
+                                            onChange={handleFormChange}
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            required
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-1">
+                                            Device Type <span className="text-red-500">*</span>
+                                        </label>
+                                        <input
+                                            type="text"
+                                            name="deviceType"
+                                            value={formData.deviceType}
+                                            onChange={handleFormChange}
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            required
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-1">
+                                            Manufacture <span className="text-red-500">*</span>
+                                        </label>
+                                        <input
+                                            type="text"
+                                            name="manufacture"
+                                            value={formData.manufacture}
+                                            onChange={handleFormChange}
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            required
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-1">
+                                            Serial Number
+                                        </label>
+                                        <input
+                                            type="text"
+                                            name="serialNumber"
+                                            value={formData.serialNumber}
+                                            onChange={handleFormChange}
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Network and Connectivity */}
+                            <div className="mb-4">
+                                <h4 className="text-sm font-semibold mb-3 text-gray-400 dark:text-gray-200">Network and Connectivity</h4>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="block text-xs text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-1">
+                                            IP Address
+                                        </label>
+                                        <input
+                                            type="text"
+                                            name="ipAddress"
+                                            value={formData.ipAddress}
+                                            onChange={handleFormChange}
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-1">
+                                            MAC Address
+                                        </label>
+                                        <input
+                                            type="text"
+                                            name="macAddress"
+                                            value={formData.macAddress}
+                                            onChange={handleFormChange}
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Location and Assignment */}
+                            <div className="mb-4">
+                                <h4 className="text-sm font-semibold mb-3 text-gray-400 dark:text-gray-200">Location and Assignment</h4>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="block text-xs text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-1">
+                                            User
+                                        </label>
+                                        <input
+                                            type="text"
+                                            name="user"
+                                            value={formData.user}
+                                            onChange={handleFormChange}
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-1">
+                                            Location
+                                        </label>
+                                        <input
+                                            type="text"
+                                            name="location"
+                                            value={formData.location}
+                                            onChange={handleFormChange}
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Lifecycle and Asset Management */}
+                            <div className="mb-4">
+                                <h4 className="text-sm font-semibold mb-3 text-gray-400 dark:text-gray-200">Lifecycle and Asset Management</h4>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="block text-xs text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-1">
+                                            Purchase Date
+                                        </label>
+                                        <input
+                                            type="date"
+                                            name="purchaseDate"
+                                            value={formData.purchaseDate}
+                                            onChange={handleFormChange}
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-1">
+                                            Warranty Expiry
+                                        </label>
+                                        <input
+                                            type="date"
+                                            name="warrantyExpired"
+                                            value={formData.warrantyExpired}
+                                            onChange={handleFormChange}
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Modal Footer */}
+                            <div className="flex justify-end gap-3 mt-6 border-t pt-3">
+                                <button
+                                    type="button"
+                                    className="px-4 py-2 rounded-xl text-sm bg-gray-300 dark:bg-gray-600 text-gray-800 dark:text-gray-100 hover:bg-gray-400 transition duration-200"
+                                    onClick={handleCloseAddModal}
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    type="submit"
+                                    style={{ backgroundColor: currentColor }}
+                                    className="px-5 py-2 rounded-xl text-sm text-white hover:opacity-90 transition duration-200"
+                                >
+                                    Add Device
+                                </button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             )}
