@@ -1,6 +1,7 @@
 import React from 'react';
 import { AiOutlineCalendar, AiOutlineShoppingCart, AiOutlineAreaChart, AiOutlineBarChart, AiOutlineStock } from 'react-icons/ai';
 import { FiShoppingBag, FiEdit, FiPieChart, FiBarChart, FiCreditCard, FiStar, FiShoppingCart } from 'react-icons/fi';
+import { FaRegChartBar } from "react-icons/fa";
 import { BsKanban, BsBarChart, BsBoxSeam, BsCurrencyDollar, BsShield, BsChatLeft } from 'react-icons/bs';
 import { BiColorFill } from 'react-icons/bi';
 import { IoMdContacts } from 'react-icons/io';
@@ -471,18 +472,22 @@ export const employeesGrid = [
 
 export const links = [
   {
-    title: 'Dashboard',
+    title: 'Menu Utama',
     links: [
       {
-        name: 'ecommerce',
-        icon: <FiShoppingBag />,
+        name: 'Ecommerce',
+        icon: <FaRegChartBar />,
       },
     ],
   },
 
   {
-    title: 'Pages',
+    title: 'Master Data',
     links: [
+      {
+        name: 'devices',
+        icon: <MdOutlineSupervisorAccount />,
+      },
       {
         name: 'accounts',
         icon: <MdOutlineSupervisorAccount />,
