@@ -171,8 +171,8 @@ const Devices = () => {
 
     const devicesGrid = [
         { field: 'id', headerText: 'ID', width: '60', textAlign: 'Center' },
-        { field: 'deviceName', headerText: 'Device Name', width: '100', textAlign: 'Left' },
-        { field: 'deviceType', headerText: 'Device Type', width: '150', textAlign: 'Center' },
+        { field: 'deviceName', headerText: 'Device Name', width: '150', textAlign: 'Left' },
+        { field: 'deviceType', headerText: 'Device Type', width: '100', textAlign: 'Center' },
         { field: 'manufacture', headerText: 'Manufacture', width: '150', textAlign: 'Center' },
         { field: 'serialNumber', headerText: 'Serial Number', width: '150', textAlign: 'Center' },
         { 
@@ -211,7 +211,7 @@ const Devices = () => {
                 <button
                     type="button"
                     style={{ backgroundColor: currentColor }}
-                    className="text-white px-4 py-2 rounded-xl hover:opacity-80 transition duration-200 font-medium"
+                    className="text-white px-4 py-2 rounded-xl hover:opacity-80 transition duration-200 font-semibold text-sm"
                     onClick={handleOpenAddModal}
                 >
                     + Add Device

@@ -129,7 +129,7 @@ const Login = () => {
       } else if (err.code === 'ECONNABORTED') {
         errorMessage = 'Request timeout. Server is not responding.';
       } else if (err.message?.includes('CORS') || err.message === 'Network Error' || !err.response) {
-        errorMessage = 'Cannot connect to server (CORS issue). Backend needs to allow requests from http://localhost:3001';
+        errorMessage = 'Cannot connect to server make sure backend is running.';
       }
       
       setError(errorMessage);
