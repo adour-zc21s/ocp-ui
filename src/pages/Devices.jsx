@@ -10,6 +10,7 @@ const REST_API_URL = 'http://localhost:8081/api/dev/v1';
 
 const Devices = () => {
     const [deviceData, setDeviceData] = useState([]);
+    const [deviceTypes, setDeviceTypes] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     
@@ -66,6 +67,35 @@ const Devices = () => {
             }
         };
         fetchDevices();
+    }, []);
+
+    // Fetch device types
+    useEffect(() => {
+        const fetchDeviceTypes = async () => {
+            try {
+                const token = localStorage.getItem('authToken');
+                if (!token) {
+                    return;
+                }
+
+                const response = await axios.get(`${REST_API_URL}/types`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                    },
+                });
+
+                let data = response.data;
+                if (data.data) data = data.data;
+                
+                if (Array.isArray(data)) {
+                    setDeviceTypes(data);
+                }
+            } catch (error) {
+                console.error('Failed to load device types:', error);
+            }
+        };
+        fetchDeviceTypes();
     }, []);
 
     // Action Handlers
@@ -391,14 +421,20 @@ const Devices = () => {
                                         <label className="block text-xs text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-1">
                                             Device Type <span className="text-red-500">*</span>
                                         </label>
-                                        <input
-                                            type="text"
+                                        <select
                                             name="deviceType"
                                             value={formData.deviceType}
                                             onChange={handleFormChange}
                                             className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                             required
-                                        />
+                                        >
+                                            <option value="">Select a device type</option>
+                                            {deviceTypes.map((type) => (
+                                                <option key={type.id || type} value={type.name || type}>
+                                                    {type.name || type}
+                                                </option>
+                                            ))}
+                                        </select>
                                     </div>
                                     <div>
                                         <label className="block text-xs text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-1">
