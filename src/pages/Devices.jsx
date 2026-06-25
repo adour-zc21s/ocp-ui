@@ -308,7 +308,7 @@ const Devices = () => {
 
     const devicesGrid = [
         { field: 'id', headerText: 'ID', width: '60', textAlign: 'Center' },
-        { field: 'deviceName', headerText: 'Device Name', width: '150', textAlign: 'Left' },
+        { field: 'deviceName', headerText: 'Device/Host Name', width: '150', textAlign: 'Left' },
         { field: 'deviceType', headerText: 'Device Type', width: '100', textAlign: 'Center' },
         { field: 'manufacture', headerText: 'Manufacture', width: '150', textAlign: 'Center' },
         { field: 'serialNumber', headerText: 'Serial Number', width: '150', textAlign: 'Center' },
@@ -441,7 +441,7 @@ const Devices = () => {
                                 <p className="text-xs text-gray-400 uppercase tracking-wider">Device ID</p>
                                 <p className="font-medium mb-3">{selectedDevice.id || '-'}</p>
 
-                                <p className="text-xs text-gray-400 uppercase tracking-wider">Device Name</p>
+                                <p className="text-xs text-gray-400 uppercase tracking-wider">Device/Host Name</p>
                                 <p className="font-medium mb-3">{selectedDevice.deviceName || '-'}</p>
                             </div>
                             <div>
@@ -537,7 +537,7 @@ const Devices = () => {
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div>
                                         <label className="block text-xs text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-1">
-                                            Device Name <span className="text-red-500">*</span>
+                                            Device/Host Name <span className="text-red-500">*</span>
                                         </label>
                                         <input
                                             type="text"
