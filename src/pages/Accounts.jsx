@@ -6,7 +6,7 @@ import { contextMenuItems } from '../data/dummy';
 import { Header } from '../components';
 import { useStateContext } from '../contexts/ContextProvider';
 
-const REST_API_URL = 'http://localhost:8081/api/acc/v1';
+const REST_API_URL = 'http://localhost:8081/api/v1/acc';
 
 const Accounts = () => {
     const [accountsData, setAccountsData] = useState([]);

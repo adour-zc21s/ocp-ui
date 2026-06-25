@@ -5,12 +5,14 @@ import { GridComponent, ColumnsDirective, ColumnDirective, Resize, Sort, Context
 import { contextMenuItems } from '../data/dummy';
 import { Header } from '../components';
 import { useStateContext } from '../contexts/ContextProvider';
+import { useNavigate } from 'react-router-dom';
 
-const REST_API_URL = 'http://localhost:8081/api/dev/v1';
+const REST_API_URL = 'http://localhost:8081/api/v1/dev';
 
 const Devices = () => {
     const [deviceData, setDeviceData] = useState([]);
     const [deviceTypes, setDeviceTypes] = useState([]);
+    const [searchId, setSearchId] = useState('');
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     
@@ -34,23 +36,39 @@ const Devices = () => {
     });
 
     const { currentColor, currentMode } = useStateContext();
+    const navigate = useNavigate();
+
+    const getAuthHeaders = () => {
+        const token = localStorage.getItem('authToken');
+        if (!token) return null;
+        return {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+        };
+    };
+
+    const handleAuthError = (error) => {
+        if (error?.response?.status === 401 || error?.response?.status === 403) {
+            localStorage.removeItem('authToken');
+            setError('Authentication required. Redirecting to login.');
+            navigate('/login', { replace: true });
+            return true;
+        }
+        return false;
+    };
 
     useEffect(() => {
         const fetchDevices = async () => {
             try {
-                const token = localStorage.getItem('authToken');
-                if (!token) {
+                const headers = getAuthHeaders();
+                if (!headers) {
                     setError('No authentication token found. Please log in again.');
                     setLoading(false);
+                    navigate('/login', { replace: true });
                     return;
                 }
 
-                const response = await axios.get(REST_API_URL, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json',
-                    },
-                });
+                const response = await axios.get(REST_API_URL, { headers });
 
                 let data = response.data;
                 if (data.data) data = data.data;
@@ -62,7 +80,9 @@ const Devices = () => {
                 }
                 setLoading(false);
             } catch (error) {
-                setError('Failed to load devices, please log out and log in again.');
+                if (!handleAuthError(error)) {
+                    setError('Failed to load devices, please log out and log in again.');
+                }
                 setLoading(false);
             }
         };
@@ -73,17 +93,12 @@ const Devices = () => {
     useEffect(() => {
         const fetchDeviceTypes = async () => {
             try {
-                const token = localStorage.getItem('authToken');
-                if (!token) {
+                const headers = getAuthHeaders();
+                if (!headers) {
                     return;
                 }
 
-                const response = await axios.get(`${REST_API_URL}/types`, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json',
-                    },
-                });
+                const response = await axios.get(`${REST_API_URL}/types`, { headers });
 
                 let data = response.data;
                 if (data.data) data = data.data;
@@ -92,7 +107,9 @@ const Devices = () => {
                     setDeviceTypes(data);
                 }
             } catch (error) {
-                console.error('Failed to load device types:', error);
+                if (!handleAuthError(error)) {
+                    console.error('Failed to load device types:', error);
+                }
             }
         };
         fetchDeviceTypes();
@@ -149,12 +166,101 @@ const Devices = () => {
         }));
     };
 
+    // Search handlers
+    const handleSearchInputChange = (e) => {
+        setSearchId(e.target.value);
+    };
+
+    const handleSearchById = async () => {
+        if (!searchId) {
+            alert('Please enter a device ID to search');
+            return;
+        }
+
+        const trimmedSearchId = searchId.trim();
+        const localMatch = deviceData.find((device) => String(device.id) === String(trimmedSearchId));
+        if (localMatch) {
+            setDeviceData([localMatch]);
+            setError(null);
+            return;
+        }
+
+        try {
+            setLoading(true);
+            const headers = getAuthHeaders();
+            if (!headers) {
+                alert('Please log in before searching devices.');
+                setLoading(false);
+                return;
+            }
+
+            let response;
+            try {
+                response = await axios.get(`${REST_API_URL}/?id=${encodeURIComponent(trimmedSearchId)}`, { headers });
+            } catch (firstErr) {
+                if (firstErr.response?.status === 404) {
+                    response = await axios.get(`${REST_API_URL}/${encodeURIComponent(trimmedSearchId)}`, { headers });
+                } else {
+                    throw firstErr;
+                }
+            }
+
+            let data = response.data;
+            if (data.data) data = data.data;
+
+            if (!data) {
+                setDeviceData([]);
+                alert('Device not found');
+            } else if (Array.isArray(data)) {
+                setDeviceData(data);
+            } else {
+                setDeviceData([data]);
+            }
+            setError(null);
+            setLoading(false);
+        } catch (err) {
+            if (!handleAuthError(err)) {
+                console.error('Search error:', err);
+                alert(err.response?.data?.message || 'Failed to search device');
+            }
+            setLoading(false);
+        }
+    };
+
+    const handleClearSearch = async () => {
+        // reload all devices
+        try {
+            setLoading(true);
+            const headers = getAuthHeaders();
+            if (!headers) {
+                setError('Please log in to load devices.');
+                setLoading(false);
+                return;
+            }
+            const response = await axios.get(REST_API_URL, { headers });
+
+            let data = response.data;
+            if (data.data) data = data.data;
+            if (Array.isArray(data)) setDeviceData(data);
+            else setDeviceData([]);
+            setSearchId('');
+            setError(null);
+            setLoading(false);
+        } catch (err) {
+            if (!handleAuthError(err)) {
+                console.error('Reload devices error:', err);
+                setError('Failed to reload devices');
+            }
+            setLoading(false);
+        }
+    };
+
     const handleAddDevice = async (e) => {
         e.preventDefault();
         try {
-            const token = localStorage.getItem('authToken');
-            if (!token) {
-                alert('No authentication token found. Please log in again.');
+            const headers = getAuthHeaders();
+            if (!headers) {
+                alert('Please log in before adding a device.');
                 return;
             }
 
@@ -164,37 +270,38 @@ const Devices = () => {
                 return;
             }
 
-            const response = await axios.post(REST_API_URL, formData, {
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json',
-                }
-            });
+            const response = await axios.post(REST_API_URL, formData, { headers });
 
             // Add new device to the list
             setDeviceData(prevData => [...prevData, response.data]);
             alert('Device added successfully');
             handleCloseAddModal();
         } catch (err) {
-            console.error("Add device error:", err);
-            alert(err.response?.data?.message || 'Failed to add device');
+            if (!handleAuthError(err)) {
+                console.error("Add device error:", err);
+                alert(err.response?.data?.message || 'Failed to add device');
+            }
         }
     };
 
     const handleDelete = async (rowData) => {
         if (window.confirm(`Are you sure you want to delete device: ${rowData.name}?`)) {
             try {
-                const token = localStorage.getItem('authToken');
-                
-                await axios.delete(`${REST_API_URL}/?id=${rowData.id}`, {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
+                const headers = getAuthHeaders();
+                if (!headers) {
+                    alert('Please log in before deleting a device.');
+                    return;
+                }
+
+                await axios.delete(`${REST_API_URL}/?id=${rowData.id}`, { headers });
 
                 setDeviceData(prevData => prevData.filter(device => device.id !== rowData.id));
                 alert('Device deleted successfully');
             } catch (err) {
-                console.error("Delete error:", err);
-                alert(err.response?.data?.message || 'Failed to delete device');
+                if (!handleAuthError(err)) {
+                    console.error("Delete error:", err);
+                    alert(err.response?.data?.message || 'Failed to delete device');
+                }
             }
         }
     };
@@ -238,14 +345,38 @@ const Devices = () => {
         <div className="m-2 md:m-10 mt-24 p-2 md:p-10 bg-white rounded-3xl relative">
             <div className="flex justify-between items-center mb-6">
                 <Header category="Devices" title="All Devices" />
-                <button
-                    type="button"
-                    style={{ backgroundColor: currentColor }}
-                    className="text-white px-4 py-2 rounded-xl hover:opacity-80 transition duration-200 font-semibold text-sm"
-                    onClick={handleOpenAddModal}
-                >
-                    + Add Device
-                </button>
+                <div className="flex items-center space-x-3">
+                    <input
+                        type="text"
+                        placeholder="Search by ID"
+                        value={searchId}
+                        onChange={handleSearchInputChange}
+                        className="px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                    />
+                    <button
+                        type="button"
+                        onClick={handleSearchById}
+                        className="px-3 py-2 rounded-lg text-sm text-white"
+                        style={{ backgroundColor: currentColor }}
+                    >
+                        Search
+                    </button>
+                    <button
+                        type="button"
+                        onClick={handleClearSearch}
+                        className="px-3 py-2 rounded-lg text-sm bg-gray-200 text-gray-800 hover:bg-gray-300"
+                    >
+                        Clear
+                    </button>
+                    <button
+                        type="button"
+                        style={{ backgroundColor: currentColor }}
+                        className="text-white px-4 py-2 rounded-xl hover:opacity-80 transition duration-200 font-semibold text-sm"
+                        onClick={handleOpenAddModal}
+                    >
+                        + Add Device
+                    </button>
+                </div>
             </div>
             
             {error && (
