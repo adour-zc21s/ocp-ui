@@ -11,7 +11,7 @@ const REST_API_URL = 'http://localhost:8081/api/v1/branches';
 
 const Branches = () => {
     const [brancheData, setBrancheData] = useState([]);
-    const [searchId, setSearchId] = useState('');
+    const [searchName, setSearchName] = useState('');
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
@@ -111,92 +111,92 @@ const Branches = () => {
 
     // Search handlers
     const handleSearchInputChange = (e) => {
-        setSearchId(e.target.value);
+        setSearchName(e.target.value);
     };
 
-    // const handleSearchById = async () => {
-    //     if (!searchId) {
-    //         alert('Please enter a branch ID to search');
-    //         return;
-    //     }
+    const handleSearchByName = async () => {
+        if (!searchName) {
+            alert('Please enter a branch name to search');
+            return;
+        }
 
-    //     const trimmedSearchId = searchId.trim();
-    //     const localMatch = branchData.find((branch) => String(branch.id) === String(trimmedSearchId));
-    //     if (localMatch) {
-    //         setBrancheData([localMatch]);
-    //         setError(null);
-    //         return;
-    //     }
+        const trimmedSearchName = searchName.trim();
+        const localMatch = brancheData.find((branch) => String(branch.name) === String(trimmedSearchName));
+        if (localMatch) {
+            setBrancheData([localMatch]);
+            setError(null);
+            return;
+        }
 
-    //     try {
-    //         setLoading(true);
-    //         const headers = getAuthHeaders();
-    //         if (!headers) {
-    //             alert('Please log in before searching branches.');
-    //             setLoading(false);
-    //             return;
-    //         }
+        try {
+            setLoading(true);
+            const headers = getAuthHeaders();
+            if (!headers) {
+                alert('Please log in before searching branches.');
+                setLoading(false);
+                return;
+            }
 
-    //         let response;
-    //         try {
-    //             response = await axios.get(`${REST_API_URL}/?id=${encodeURIComponent(trimmedSearchId)}`, { headers });
-    //         } catch (firstErr) {
-    //             if (firstErr.response?.status === 404) {
-    //                 response = await axios.get(`${REST_API_URL}/${encodeURIComponent(trimmedSearchId)}`, { headers });
-    //             } else {
-    //                 throw firstErr;
-    //             }
-    //         }
+            let response;
+            try {
+                response = await axios.get(`${REST_API_URL}/search?letter=${encodeURIComponent(trimmedSearchName)}`, { headers });
+            } catch (firstErr) {
+                if (firstErr.response?.status === 404) {
+                    response = await axios.get(`${REST_API_URL}/${encodeURIComponent(trimmedSearchName)}`, { headers });
+                } else {
+                    throw firstErr;
+                }
+            }
 
-    //         let data = response.data;
-    //         if (data.data) data = data.data;
+            let data = response.data;
+            if (data.data) data = data.data;
 
-    //         if (!data) {
-    //             setBranchData([]);
-    //             alert('Branch not found');
-    //         } else if (Array.isArray(data)) {
-    //             setBranchData(data);
-    //         } else {
-    //             setBranchData([data]);
-    //         }
-    //         setError(null);
-    //         setLoading(false);
-    //     } catch (err) {
-    //         if (!handleAuthError(err)) {
-    //             console.error('Search error:', err);
-    //             alert(err.response?.data?.message || 'Failed to search branch');
-    //         }
-    //         setLoading(false);
-    //     }
-    // };
+            if (!data) {
+                setBrancheData([]);
+                alert('Branch not found');
+            } else if (Array.isArray(data)) {
+                setBrancheData(data);
+            } else {
+                setBrancheData([data]);
+            }
+            setError(null);
+            setLoading(false);
+        } catch (err) {
+            if (!handleAuthError(err)) {
+                console.error('Search error:', err);
+                alert(err.response?.data?.message || 'Failed to search branch');
+            }
+            setLoading(false);
+        }
+    };
 
-    // const handleClearSearch = async () => {
-    //     // reload all branches
-    //     try {
-    //         setLoading(true);
-    //         const headers = getAuthHeaders();
-    //         if (!headers) {
-    //             setError('Please log in to load branches.');
-    //             setLoading(false);
-    //             return;
-    //         }
-    //         const response = await axios.get(REST_API_URL, { headers });
+    const handleClearSearch = async () => {
+        // reload all branches
+        try {
+            setLoading(true);
+            const headers = getAuthHeaders();
+            if (!headers) {
+                setError('Please log in to load branches.');
+                setLoading(false);
+                return;
+            }
+            const response = await axios.get(REST_API_URL, { headers });
 
-    //         let data = response.data;
-    //         if (data.data) data = data.data;
-    //         if (Array.isArray(data)) setBranchData(data);
-    //         else setBranchData([]);
-    //         setSearchId('');
-    //         setError(null);
-    //         setLoading(false);
-    //     } catch (err) {
-    //         if (!handleAuthError(err)) {
-    //             console.error('Reload branches error:', err);
-    //             setError('Failed to reload branches');
-    //         }
-    //         setLoading(false);
-    //     }
-    // };
+            let data = response.data;
+            if (data.data) data = data.data;
+            if (Array.isArray(data)) setBrancheData(data);
+            else setBrancheData([]);
+            setSearchName('');
+            setError(null);
+            setLoading(false);
+        } catch (err) {
+            if (!handleAuthError(err)) {
+                console.error('Reload branches error:', err);
+                setError('Failed to reload branches');
+            }
+            setLoading(false);
+        }
+    };
 
     const branchesGrid = [
         { field: 'id', headerText: 'ID', width: '60', textAlign: 'Center' },
@@ -235,17 +235,17 @@ const Branches = () => {
         <div className="m-2 md:m-10 mt-24 p-2 md:p-10 bg-white rounded-3xl relative">
             <div className="flex justify-between items-center mb-6">
                 <Header category="Branches" title="All Branche" />
-                {/* <div className="flex items-center space-x-3">
+                <div className="flex items-center space-x-3">
                     <input
                         type="text"
-                        placeholder="Search by ID"
-                        value={searchId}
+                        placeholder="Search by name"
+                        value={searchName}
                         onChange={handleSearchInputChange}
                         className="px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
                     />
                     <button
                         type="button"
-                        onClick={handleSearchById}
+                        onClick={handleSearchByName}
                         className="px-3 py-2 rounded-lg text-sm text-white"
                         style={{ backgroundColor: currentColor }}
                     >
@@ -266,7 +266,7 @@ const Branches = () => {
                     >
                         + Add Branch
                     </button>
-                </div> */}
+                </div>
             </div>
 
             {error && (
