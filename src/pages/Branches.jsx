@@ -204,7 +204,6 @@ const Branches = () => {
     };
 
     const branchesGrid = [
-        { field: 'id', headerText: 'ID', width: '60', textAlign: 'Center' },
         { field: 'code', headerText: 'Dealer Code', width: '150', textAlign: 'Left' },
         { field: 'name', headerText: 'Branch Name', width: '150', textAlign: 'Left' },
         { field: 'namaPt', headerText: 'PT', width: '150', textAlign: 'Center' },
