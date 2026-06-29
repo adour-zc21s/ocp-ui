@@ -2,6 +2,7 @@ export { default as Login } from './Login';
 export { default as Ecommerce } from './Ecommerce';
 export { default as Devices } from './Devices';
 export { default as Accounts } from './Accounts';
+export { default as Branches } from './Branches';
 export { default as Kanban } from './Kanban';
 export { default as Orders } from './Orders';
 export { default as Employees } from './Employees';

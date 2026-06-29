@@ -493,6 +493,10 @@ export const links = [
         icon: <MdOutlineSupervisorAccount />,
       },
       {
+        name: 'branches',
+        icon: <MdOutlineSupervisorAccount />,
+      },
+      {
         name: 'orders',
         icon: <AiOutlineShoppingCart />,
       },
