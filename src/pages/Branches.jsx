@@ -203,6 +203,45 @@ const Branches = () => {
         }
     };
 
+    // handleDelete function
+    const handleDelete = async (rowData) => {
+        // 1. Ask for confirmation before destroying data
+        if (!window.confirm(`Are you sure you want to delete branch "${rowData.name}"?`)) {
+            return;
+        }
+
+        try {
+            setLoading(true);
+            const headers = getAuthHeaders();
+            if (!headers) {
+                alert('Please log in before deleting branches.');
+                setLoading(false);
+                return;
+            }
+
+            // 2. Make the HTTP DELETE request to your backend api endpoint
+            // Assuming your backend routes follow standard REST conventions like: /api/v1/branches/:code or :id
+            // Swap `rowData.code` with `rowData.id` depending on what your primary backend key identifier is.
+            await axios.delete(`${REST_API_URL}/${encodeURIComponent(rowData.id)}`, { headers });
+
+            // 3. Update local state to immediately filter out the deleted item from the table UI
+            setBrancheData((prevBranches) => 
+                prevBranches.filter((branch) => branch.id !== rowData.id)
+            );
+
+            alert(`Branch "${rowData.name}" successfully deleted.`);
+            setError(null);
+        } catch (err) {
+            // 4. Handle authentication expirations or standard API errors
+            if (!handleAuthError(err)) {
+                console.error('Delete branch error:', err);
+                alert(err.response?.data?.message || 'Failed to delete branch. Please try again.');
+            }
+        } finally {
+            setLoading(false);
+        }
+    };
+
     const branchesGrid = [
         { field: 'code', headerText: 'Dealer Code', width: '150', textAlign: 'Left' },
         { field: 'name', headerText: 'Branch Name', width: '150', textAlign: 'Left' },
