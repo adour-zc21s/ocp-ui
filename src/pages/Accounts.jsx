@@ -19,22 +19,37 @@ const Accounts = () => {
 
     const { currentColor, currentMode } = useStateContext();
 
+    const getAuthHeaders = () => {
+        const token = localStorage.getItem('authToken');
+        if (!token) return null;
+        return {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+        };
+    };
+    
+    const handleAuthError = (error) => {
+        if (error?.response?.status === 401 || error?.response?.status === 403) {
+            localStorage.removeItem('authToken');
+            setError('Authentication required. Redirecting to login.');
+            navigate('/login', { replace: true });
+            return true;
+        }
+        return false;
+    };
+
     useEffect(() => {
         const fetchAccounts = async () => {
             try {
-                const token = localStorage.getItem('authToken');
-                if (!token) {
-                    setError('No authentication token found.');
+                const headers = getAuthHeaders();
+                if (!headers) {
+                    setError('No authentication token found. Please log in again.');
                     setLoading(false);
+                    navigate('/login', { replace: true });
                     return;
                 }
 
-                const response = await axios.get(REST_API_URL, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json',
-                    },
-                });
+                const response = await axios.get(REST_API_URL, { headers });
 
                 let data = response.data;
                 if (data.data) data = data.data;
@@ -46,7 +61,9 @@ const Accounts = () => {
                 }
                 setLoading(false);
             } catch (error) {
-                setError('Failed to load accounts, please log out and log in again.');
+                if (!handleAuthError(error)) {
+                    setError('Failed to load accounts, please log out and log in again.');
+                }
                 setLoading(false);
             }
         };
