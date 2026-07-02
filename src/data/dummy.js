@@ -472,7 +472,7 @@ export const employeesGrid = [
 
 export const links = [
   {
-    title: 'Menu Utama',
+    title: 'Home',
     links: [
       {
         name: 'Ecommerce',
@@ -496,6 +496,11 @@ export const links = [
         name: 'branches',
         icon: <MdOutlineSupervisorAccount />,
       },
+    ],
+  },
+  {
+    title: 'Others',
+    links: [
       {
         name: 'orders',
         icon: <AiOutlineShoppingCart />,
