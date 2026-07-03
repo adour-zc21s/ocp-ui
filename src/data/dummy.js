@@ -7,6 +7,14 @@ import { BiColorFill } from 'react-icons/bi';
 import { IoMdContacts } from 'react-icons/io';
 import { RiContactsLine, RiStockLine } from 'react-icons/ri';
 import { MdOutlineSupervisorAccount } from 'react-icons/md';
+
+import { GoGraph } from "react-icons/go";
+import { GoProjectRoadmap } from "react-icons/go";
+import { GoPeople } from "react-icons/go";
+import { GoBookmark } from "react-icons/go";
+import { GoCreditCard } from "react-icons/go";
+import { GoDeviceDesktop } from "react-icons/go";
+
 import { HiOutlineRefresh } from 'react-icons/hi';
 import { TiTick } from 'react-icons/ti';
 import { GiLouvrePyramid } from 'react-icons/gi';
@@ -476,7 +484,7 @@ export const links = [
     links: [
       {
         name: 'Ecommerce',
-        icon: <FaRegChartBar />,
+        icon: <GoGraph />,
       },
     ],
   },
@@ -486,15 +494,32 @@ export const links = [
     links: [
       {
         name: 'devices',
-        icon: <MdOutlineSupervisorAccount />,
+        icon: <GoDeviceDesktop />,
       },
       {
         name: 'accounts',
-        icon: <MdOutlineSupervisorAccount />,
+        icon: <GoCreditCard />,
       },
       {
         name: 'branches',
-        icon: <MdOutlineSupervisorAccount />,
+        icon: <GoBookmark />,
+      },
+      {
+        name: 'customers',
+        icon: <GoPeople />,
+      },
+      {
+        name: 'items',
+        icon: <GoProjectRoadmap />,
+      },
+    ],
+  },
+  {
+    title: 'Point Of Sale',
+    links: [
+      {
+        name: 'orders',
+        icon: <AiOutlineShoppingCart />,
       },
     ],
   },
@@ -502,16 +527,8 @@ export const links = [
     title: 'Others',
     links: [
       {
-        name: 'orders',
-        icon: <AiOutlineShoppingCart />,
-      },
-      {
         name: 'employees',
         icon: <IoMdContacts />,
-      },
-      {
-        name: 'customers',
-        icon: <RiContactsLine />,
       },
     ],
   },
