@@ -7,7 +7,8 @@ import { Header } from '../components';
 import { useStateContext } from '../contexts/ContextProvider';
 import { useNavigate } from 'react-router-dom';
 
-const REST_API_URL = 'http://localhost:8081/api/v1/order/items';
+const BACKEND_IP = '10.101.90.57';
+const REST_API_URL = `http://${BACKEND_IP}:8081/api/v1/order/items`;
 
 const Items = () => {
     const [itemData, setItemData] = useState([]);
