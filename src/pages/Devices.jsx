@@ -352,15 +352,17 @@ const Devices = () => {
 
     return (
         <div className="m-2 md:m-10 mt-24 p-2 md:p-10 bg-white rounded-3xl relative">
-            <div className="flex justify-between items-center mb-6">
+            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
                 <Header category="Devices" title="All Devices" />
-                <div className="flex items-center space-x-3">
+                
+                {/* flex-wrap ensures components wrap line-by-line if they run out of space */}
+                <div className="flex flex-wrap items-center gap-2">
                     <input
                         type="text"
                         placeholder="Search by ID"
                         value={searchId}
                         onChange={handleSearchInputChange}
-                        className="px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                        className="flex-1 sm:flex-initial px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
                     />
                     <button
                         type="button"
@@ -380,7 +382,7 @@ const Devices = () => {
                     <button
                         type="button"
                         style={{ backgroundColor: currentColor }}
-                        className="text-white px-4 py-2 rounded-xl hover:opacity-80 transition duration-200 font-semibold text-sm"
+                        className="w-full sm:w-auto text-white px-4 py-2 rounded-xl hover:opacity-80 transition duration-200 font-semibold text-sm text-center"
                         onClick={handleOpenAddModal}
                     >
                         + Add Device

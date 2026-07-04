@@ -4,13 +4,13 @@ import axios from 'axios';
 import { FiMail, FiLock, FiEye, FiEyeOff } from 'react-icons/fi';
 import { useStateContext } from '../contexts/ContextProvider';
 
-const BACKEND_IP = '10.101.90.57';
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL; 
 
-const REST_API_URL = `http://${BACKEND_IP}:8081/api/v1/auth/authenticate`;
+const REST_API_URL = `${API_BASE_URL}/api/v1/auth/authenticate`;
 
 // Create a standalone axios instance for login to avoid interceptor conflicts
 const loginAxios = axios.create({
-  baseURL: `http://${BACKEND_IP}:8081`,
+  baseURL: API_BASE_URL,
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json',
