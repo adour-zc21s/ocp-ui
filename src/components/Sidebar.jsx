@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, NavLink } from 'react-router-dom';
-import { CiStar } from 'react-icons/ci';
+import { ImLeaf } from "react-icons/im";
 import { MdOutlineCancel } from 'react-icons/md';
 import { TooltipComponent } from '@syncfusion/ej2-react-popups';
 
@@ -25,8 +25,8 @@ const Sidebar = () => {
         <>
           <div className="flex items-center justify-between mb-6">
             <Link to="/" onClick={handleCloseSideBar} className="flex items-center gap-2 text-lg font-bold text-slate-900 dark:text-white">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-200 text-white">
-                <CiStar />
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-green-500 text-white">
+                <ImLeaf />
               </div>
               <span>OCP Dash</span>
             </Link>
