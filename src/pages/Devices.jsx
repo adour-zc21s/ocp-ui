@@ -354,7 +354,7 @@ const Devices = () => {
         <div className="m-2 md:m-10 mt-24 p-2 md:p-10 bg-white rounded-3xl relative">
             <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
                 <Header category="Devices" title="All Devices" />
-                
+
                 {/* flex-wrap ensures components wrap line-by-line if they run out of space */}
                 <div className="flex flex-wrap items-center gap-2">
                     <input
@@ -437,7 +437,7 @@ const Devices = () => {
                             src="/images/watermark.png" 
                             alt="" 
                             aria-hidden="true" 
-                            className="absolute inset-0 z-0 w-full h-full object-contain opacity-10 pointer-events-none select-none" 
+                            className="absolute inset-0 z-0 w-full h-full object-contain opacity-20 pointer-events-none select-none" 
                         />
                         
                         {/* Modal Header */}

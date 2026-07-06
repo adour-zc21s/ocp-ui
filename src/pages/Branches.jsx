@@ -363,7 +363,7 @@ const Branches = () => {
                             src="/images/watermark.png" 
                             alt="" 
                             aria-hidden="true" 
-                            className="absolute inset-0 z-0 w-full h-full object-contain opacity-10 pointer-events-none select-none" 
+                            className="absolute inset-0 z-0 w-full h-full object-contain opacity-20 pointer-events-none select-none" 
                         />
 
                         {/* ALL CONTENT INSIDE THE BOX WRAPPED IN A HIGHER Z-INDEX */}
