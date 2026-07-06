@@ -25,7 +25,7 @@ const Sidebar = () => {
         <>
           <div className="flex items-center justify-between mb-6">
             <Link to="/" onClick={handleCloseSideBar} className="flex items-center gap-2 text-lg font-bold text-slate-900 dark:text-white">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-500 text-white">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-200 text-white">
                 <CiStar />
               </div>
               <span>OCP Dash</span>
@@ -45,7 +45,7 @@ const Sidebar = () => {
             {links.map((item) => (
               <div key={item.title} className="mb-6">
                 <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider px-1 mb-3">{item.title}</p>
-                <div className="rounded-[16px] bg-slate-50 dark:bg-[#111827] p-2 space-y-2">
+                <div className="rounded-[16px] bg-white dark:bg-[#111827] p-2 space-y-2">
                   {item.links.map((link) => (
                     <NavLink
                       to={`/${link.name}`}
