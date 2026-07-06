@@ -20,7 +20,7 @@ const Sidebar = () => {
   const normalLink = 'flex items-center gap-4 pl-4 py-3 rounded-lg text-sm text-slate-700 dark:text-gray-200 hover:bg-slate-100 dark:hover:bg-slate-700 w-full';
 
   return (
-    <div className="h-full flex flex-col overflow-auto rounded-[20px] bg-white dark:bg-[#0b1220] p-4 border border-gray-200 dark:border-gray-700 shadow-sm">
+    <div className="h-full flex flex-col overflow-auto rounded-xl bg-white dark:bg-[#0b1220] p-4 border border-gray-200 dark:border-gray-700 shadow-sm">
       {activeMenu && (
         <>
           <div className="flex items-center justify-between mb-6">
@@ -28,7 +28,7 @@ const Sidebar = () => {
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-500 text-white">
                 <CiStar />
               </div>
-              <span>OCP</span>
+              <span>OCP Dash</span>
             </Link>
             <TooltipComponent content="Menu" position="BottomCenter">
               <button
