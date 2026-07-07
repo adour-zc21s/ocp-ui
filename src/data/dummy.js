@@ -492,12 +492,12 @@ export const links = [
         icon: <CiMonitor />,
       },
       {
-        name: 'accounts',
-        icon: <CiMoneyCheck1 />,
-      },
-      {
         name: 'branches',
         icon: <CiFlag1 />,
+      },
+      {
+        name: 'accounts',
+        icon: <CiMoneyCheck1 />,
       },
       {
         name: 'customers',
