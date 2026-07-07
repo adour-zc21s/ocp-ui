@@ -321,7 +321,7 @@ const Devices = () => {
         { field: 'deviceName', headerText: 'Device/Host Name', width: '150', textAlign: 'Left' },
         { field: 'user', headerText: 'User', width: '150', textAlign: 'Center' },
         { field: 'deviceType', headerText: 'Device Type', width: '100', textAlign: 'Center' },
-        { field: 'manufacture', headerText: 'Manufacture', width: '150', textAlign: 'Center' },
+        { field: 'ipAddress', headerText: 'IP Address', width: '150', textAlign: 'Center' },
         { 
             field: 'actions', 
             headerText: 'Actions', 
