@@ -351,7 +351,7 @@ const Devices = () => {
     const editing = { allowDeleting: false, allowEditing: false };
 
     return (
-        <div className="m-2 md:m-10 mt-24 p-2 md:p-10 bg-white rounded-3xl relative">
+        <div className="m-2 md:m-10 mt-24 p-2 md:p-10 bg-white rounded-xl relative">
             <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
                 <Header category="Devices" title="All Devices" />
 
