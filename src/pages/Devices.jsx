@@ -22,9 +22,23 @@ const Devices = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedDevice, setSelectedDevice] = useState(null);
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+    const [isEditingDevice, setIsEditingDevice] = useState(false);
     
     // Form states for adding device
     const [formData, setFormData] = useState({
+        deviceName: '',
+        deviceType: '',
+        manufacture: '',
+        serialNumber: '',
+        ipAddress: '',
+        macAddress: '',
+        user: '',
+        location: '',
+        purchaseDate: '',
+        warrantyExpired: ''
+    });
+
+    const [editFormData, setEditFormData] = useState({
         deviceName: '',
         deviceType: '',
         manufacture: '',
@@ -119,46 +133,53 @@ const Devices = () => {
     }, []);
 
     // Action Handlers
+    const createEmptyDeviceForm = () => ({
+        deviceName: '',
+        deviceType: '',
+        manufacture: '',
+        serialNumber: '',
+        ipAddress: '',
+        macAddress: '',
+        user: '',
+        location: '',
+        purchaseDate: '',
+        warrantyExpired: ''
+    });
+
+    const mapDeviceToFormData = (device = {}) => ({
+        deviceName: device.deviceName || '',
+        deviceType: device.deviceType || '',
+        manufacture: device.manufacture || '',
+        serialNumber: device.serialNumber || '',
+        ipAddress: device.ipAddress || '',
+        macAddress: device.macAddress || '',
+        user: device.user || '',
+        location: device.location || '',
+        purchaseDate: device.purchaseDate || '',
+        warrantyExpired: device.warrantyExpired || ''
+    });
+
     const handleView = (rowData) => {
         setSelectedDevice(rowData);
+        setEditFormData(mapDeviceToFormData(rowData));
+        setIsEditingDevice(false);
         setIsModalOpen(true);
     };
 
     const handleCloseModal = () => {
         setIsModalOpen(false);
         setSelectedDevice(null);
+        setIsEditingDevice(false);
     };
 
     const handleOpenAddModal = () => {
-        setFormData({
-            deviceName: '',
-            deviceType: '',
-            manufacture: '',
-            serialNumber: '',
-            ipAddress: '',
-            macAddress: '',
-            user: '',
-            location: '',
-            purchaseDate: '',
-            warrantyExpired: ''
-        });
+        setFormData(createEmptyDeviceForm());
         setIsAddModalOpen(true);
     };
 
     const handleCloseAddModal = () => {
         setIsAddModalOpen(false);
-        setFormData({
-            deviceName: '',
-            deviceType: '',
-            manufacture: '',
-            serialNumber: '',
-            ipAddress: '',
-            macAddress: '',
-            user: '',
-            location: '',
-            purchaseDate: '',
-            warrantyExpired: ''
-        });
+        setFormData(createEmptyDeviceForm());
     };
 
     const handleFormChange = (e) => {
@@ -167,6 +188,54 @@ const Devices = () => {
             ...prevState,
             [name]: value
         }));
+    };
+
+    const handleEditFormChange = (e) => {
+        const { name, value } = e.target;
+        setEditFormData(prevState => ({
+            ...prevState,
+            [name]: value
+        }));
+    };
+
+    const handleEditDevice = () => {
+        setEditFormData(mapDeviceToFormData(selectedDevice));
+        setIsEditingDevice(true);
+    };
+
+    const handleSaveEditedDevice = async (e) => {
+        e.preventDefault();
+        if (!selectedDevice?.id) return;
+
+        try {
+            const headers = getAuthHeaders();
+            if (!headers) {
+                alert('Please log in before updating a device.');
+                return;
+            }
+
+            if (!editFormData.deviceName || !editFormData.deviceType || !editFormData.manufacture) {
+                alert('Please fill in all required fields (Device Name, Device Type, Manufacture)');
+                return;
+            }
+
+            const response = await axios.put(`${REST_API_URL}/${encodeURIComponent(selectedDevice.id)}`, {
+                ...editFormData,
+                id: selectedDevice.id
+            }, { headers });
+
+            const updatedDevice = response.data?.data || response.data || { ...selectedDevice, ...editFormData, id: selectedDevice.id };
+            setDeviceData(prevData => prevData.map(device => device.id === selectedDevice.id ? updatedDevice : device));
+            setSelectedDevice(updatedDevice);
+            setIsEditingDevice(false);
+            setError(null);
+            alert('Device updated successfully');
+        } catch (err) {
+            if (!handleAuthError(err)) {
+                console.error('Update device error:', err);
+                alert(err.response?.data?.message || 'Failed to update device');
+            }
+        }
     };
 
     // Search handlers
@@ -443,87 +512,149 @@ const Devices = () => {
                             <h3 className="text-xl font-semibold text-gray-800 dark:text-gray-200">
                                 Device Details
                             </h3>
-                            <button 
-                                onClick={handleCloseModal}
-                                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 text-2xl font-semibold"
-                            >
-                                &times;
-                            </button>
-                        </div>
-
-                        {/* Modal Content */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-700 dark:text-gray-300">
-                        {/* title */}
-                            <h3 className="text-sm font-semibold col-span-2 mb-2 text-gray-400 dark:text-gray-200">Identity & Classification</h3>
-                            <div>
-                                <p className="text-xs text-gray-400 uppercase tracking-wider">Device ID</p>
-                                <p className="font-medium mb-3">{selectedDevice.id || '-'}</p>
-
-                                <p className="text-xs text-gray-400 uppercase tracking-wider">Device/Host Name</p>
-                                <p className="font-medium mb-3">{selectedDevice.deviceName || '-'}</p>
-                            </div>
-                            <div>
-                                <p className="text-xs text-gray-400 uppercase tracking-wider">Manufacture</p>
-                                <p className="font-medium mb-3">{selectedDevice.manufacture || '-'}</p>
-
-                                <p className="text-xs text-gray-400 uppercase tracking-wider">Device Type</p>
-                                <p className="font-medium mb-3">{selectedDevice.deviceType || '-'}</p>
+                            <div className="flex items-center gap-2">
+                                {!isEditingDevice && (
+                                    <button
+                                        type="button"
+                                        onClick={handleEditDevice}
+                                        className="px-3 py-2 rounded-lg text-sm bg-blue-100 text-blue-700 hover:bg-blue-200 transition duration-200"
+                                    >
+                                        Edit
+                                    </button>
+                                )}
+                                <button 
+                                    onClick={handleCloseModal}
+                                    className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 text-2xl font-semibold"
+                                >
+                                    &times;
+                                </button>
                             </div>
                         </div>
 
-                        {/* Modal Content */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-700 dark:text-gray-300">
-                        {/* title */}
-                            <h3 className="text-sm font-semibold col-span-2 mb-2 text-gray-400 dark:text-gray-200">Network and Connectivity</h3>
-                            <div>
-                                <p className="text-xs text-gray-400 uppercase tracking-wider">IP Address</p>
-                                <p className="font-medium mb-3">{selectedDevice.ipAddress || '-'}</p>
-                            </div>
-                            <div>
-                                <p className="text-xs text-gray-400 uppercase tracking-wider">MAC Address</p>
-                                <p className="font-medium mb-3">{selectedDevice.macAddress || '-'}</p>
-                            </div>
-                        </div>
+                        {isEditingDevice ? (
+                            <form onSubmit={handleSaveEditedDevice} className="space-y-4">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="block text-xs text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-1">Device/Host Name <span className="text-red-500">*</span></label>
+                                        <input type="text" name="deviceName" value={editFormData.deviceName} onChange={handleEditFormChange} className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500" required />
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-1">Device Type <span className="text-red-500">*</span></label>
+                                        <select name="deviceType" value={editFormData.deviceType} onChange={handleEditFormChange} className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                                            <option value="">Select a device type</option>
+                                            {deviceTypes.map((type) => (
+                                                <option key={type.id || type} value={type.name || type}>{type.name || type}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-1">Manufacture <span className="text-red-500">*</span></label>
+                                        <input type="text" name="manufacture" value={editFormData.manufacture} onChange={handleEditFormChange} className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500" required />
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-1">Serial Number</label>
+                                        <input type="text" name="serialNumber" value={editFormData.serialNumber} onChange={handleEditFormChange} className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-1">IP Address</label>
+                                        <input type="text" name="ipAddress" value={editFormData.ipAddress} onChange={handleEditFormChange} className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-1">MAC Address</label>
+                                        <input type="text" name="macAddress" value={editFormData.macAddress} onChange={handleEditFormChange} className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-1">User</label>
+                                        <input type="text" name="user" value={editFormData.user} onChange={handleEditFormChange} className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-1">Location</label>
+                                        <input type="text" name="location" value={editFormData.location} onChange={handleEditFormChange} className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-1">Purchase Date</label>
+                                        <input type="date" name="purchaseDate" value={editFormData.purchaseDate} onChange={handleEditFormChange} className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-1">Warranty Expiry</label>
+                                        <input type="date" name="warrantyExpired" value={editFormData.warrantyExpired} onChange={handleEditFormChange} className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                                    </div>
+                                </div>
+                                <div className="flex justify-end gap-3 mt-6 border-t pt-3">
+                                    <button type="button" className="px-4 py-2 rounded-xl text-sm bg-gray-300 text-gray-800 hover:bg-gray-400 transition duration-200" onClick={() => setIsEditingDevice(false)}>
+                                        Cancel
+                                    </button>
+                                    <button type="submit" style={{ backgroundColor: currentColor }} className="px-5 py-2 rounded-xl text-sm text-white hover:opacity-90 transition duration-200">
+                                        Save Changes
+                                    </button>
+                                </div>
+                            </form>
+                        ) : (
+                            <>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-700 dark:text-gray-300">
+                                    <h3 className="text-sm font-semibold col-span-2 mb-2 text-gray-400 dark:text-gray-200">Identity & Classification</h3>
+                                    <div>
+                                        <p className="text-xs text-gray-400 uppercase tracking-wider">Device ID</p>
+                                        <p className="font-medium mb-3">{selectedDevice.id || '-'}</p>
+                                        <p className="text-xs text-gray-400 uppercase tracking-wider">Device/Host Name</p>
+                                        <p className="font-medium mb-3">{selectedDevice.deviceName || '-'}</p>
+                                    </div>
+                                    <div>
+                                        <p className="text-xs text-gray-400 uppercase tracking-wider">Manufacture</p>
+                                        <p className="font-medium mb-3">{selectedDevice.manufacture || '-'}</p>
+                                        <p className="text-xs text-gray-400 uppercase tracking-wider">Device Type</p>
+                                        <p className="font-medium mb-3">{selectedDevice.deviceType || '-'}</p>
+                                    </div>
+                                </div>
 
-                        {/* Modal Content */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-700 dark:text-gray-300">
-                        {/* title */}
-                            <h3 className="text-sm font-semibold col-span-2 mb-2 text-gray-400 dark:text-gray-200">Location and assignment</h3>
-                            <div>
-                                <p className="text-xs text-gray-400 uppercase tracking-wider">User</p>
-                                <p className="font-medium mb-3">{selectedDevice.user || '-'}</p>
-                            </div>
-                            <div>
-                                <p className="text-xs text-gray-400 uppercase tracking-wider">Location</p>
-                                <p className="font-medium mb-3">{selectedDevice.location || '-'}</p>
-                            </div>
-                        </div>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-700 dark:text-gray-300">
+                                    <h3 className="text-sm font-semibold col-span-2 mb-2 text-gray-400 dark:text-gray-200">Network and Connectivity</h3>
+                                    <div>
+                                        <p className="text-xs text-gray-400 uppercase tracking-wider">IP Address</p>
+                                        <p className="font-medium mb-3">{selectedDevice.ipAddress || '-'}</p>
+                                    </div>
+                                    <div>
+                                        <p className="text-xs text-gray-400 uppercase tracking-wider">MAC Address</p>
+                                        <p className="font-medium mb-3">{selectedDevice.macAddress || '-'}</p>
+                                    </div>
+                                </div>
 
-                        {/* Modal Content */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-700 dark:text-gray-300">
-                        {/* title */}
-                            <h3 className="text-sm font-semibold col-span-2 mb-2 text-gray-400 dark:text-gray-200">Lifecycle and asset management</h3>
-                            <div>
-                                <p className="text-xs text-gray-400 uppercase tracking-wider">Purchase Date</p>
-                                <p className="font-medium mb-3">{selectedDevice.purchaseDate || '-'}</p>
-                            </div>
-                            <div>
-                                <p className="text-xs text-gray-400 uppercase tracking-wider">Warranty Expiry</p>
-                                <p className="font-medium mb-3">{selectedDevice.warrantyExpired || '-'}</p>
-                            </div>
-                        </div>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-700 dark:text-gray-300">
+                                    <h3 className="text-sm font-semibold col-span-2 mb-2 text-gray-400 dark:text-gray-200">Location and assignment</h3>
+                                    <div>
+                                        <p className="text-xs text-gray-400 uppercase tracking-wider">User</p>
+                                        <p className="font-medium mb-3">{selectedDevice.user || '-'}</p>
+                                    </div>
+                                    <div>
+                                        <p className="text-xs text-gray-400 uppercase tracking-wider">Location</p>
+                                        <p className="font-medium mb-3">{selectedDevice.location || '-'}</p>
+                                    </div>
+                                </div>
 
-                        {/* Modal Footer */}
-                        <div className="flex justify-end mt-6 border-t pt-3">
-                            <button
-                                type="button"
-                                style={{ backgroundColor: currentColor }}
-                                className="text-white px-5 py-2 rounded-xl text-sm hover:opacity-90 transition duration-200"
-                                onClick={handleCloseModal}
-                            >
-                                Close
-                            </button>
-                        </div>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-700 dark:text-gray-300">
+                                    <h3 className="text-sm font-semibold col-span-2 mb-2 text-gray-400 dark:text-gray-200">Lifecycle and asset management</h3>
+                                    <div>
+                                        <p className="text-xs text-gray-400 uppercase tracking-wider">Purchase Date</p>
+                                        <p className="font-medium mb-3">{selectedDevice.purchaseDate || '-'}</p>
+                                    </div>
+                                    <div>
+                                        <p className="text-xs text-gray-400 uppercase tracking-wider">Warranty Expiry</p>
+                                        <p className="font-medium mb-3">{selectedDevice.warrantyExpired || '-'}</p>
+                                    </div>
+                                </div>
+
+                                <div className="flex justify-end mt-6 border-t pt-3">
+                                    <button
+                                        type="button"
+                                        style={{ backgroundColor: currentColor }}
+                                        className="text-white px-5 py-2 rounded-xl text-sm hover:opacity-90 transition duration-200"
+                                        onClick={handleCloseModal}
+                                    >
+                                        Close
+                                    </button>
+                                </div>
+                            </>
+                        )}
 
                     </div>
                 </div>
