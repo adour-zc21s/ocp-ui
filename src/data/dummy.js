@@ -8,12 +8,7 @@ import { IoMdContacts } from 'react-icons/io';
 import { RiContactsLine, RiStockLine } from 'react-icons/ri';
 import { MdOutlineSupervisorAccount } from 'react-icons/md';
 
-import { GoGraph } from "react-icons/go";
-import { GoProjectRoadmap } from "react-icons/go";
-import { GoPeople } from "react-icons/go";
-import { GoBookmark } from "react-icons/go";
-import { GoCreditCard } from "react-icons/go";
-import { GoDeviceDesktop } from "react-icons/go";
+import { CiMonitor, CiMoneyCheck1, CiFlag1, CiUser, CiBoxes, CiMap} from "react-icons/ci";
 
 import { HiOutlineRefresh } from 'react-icons/hi';
 import { TiTick } from 'react-icons/ti';
@@ -484,7 +479,7 @@ export const links = [
     links: [
       {
         name: 'Ecommerce',
-        icon: <GoGraph />,
+        icon: <CiMap />,
       },
     ],
   },
@@ -494,23 +489,23 @@ export const links = [
     links: [
       {
         name: 'devices',
-        icon: <GoDeviceDesktop />,
+        icon: <CiMonitor />,
       },
       {
         name: 'accounts',
-        icon: <GoCreditCard />,
+        icon: <CiMoneyCheck1 />,
       },
       {
         name: 'branches',
-        icon: <GoBookmark />,
+        icon: <CiFlag1 />,
       },
       {
         name: 'customers',
-        icon: <GoPeople />,
+        icon: <CiUser />,
       },
       {
         name: 'items',
-        icon: <GoProjectRoadmap />,
+        icon: <CiBoxes />,
       },
     ],
   },

@@ -3,6 +3,7 @@ import axios from 'axios';
 import { Stacked, Pie, Button, LineChart, SparkLine } from '../components';
 import { GridComponent, ColumnsDirective, ColumnDirective, Resize, Sort, ContextMenu, Filter, Page, ExcelExport, PdfExport, Edit, Inject } from '@syncfusion/ej2-react-grids';
 import { contextMenuItems } from '../data/dummy';
+import { CiZoomIn, CiTrash, CiEdit, CiEraser, CiSearch} from "react-icons/ci";
 import { Header } from '../components';
 import { useStateContext } from '../contexts/ContextProvider';
 import { useNavigate } from 'react-router-dom';
@@ -318,9 +319,9 @@ const Devices = () => {
     const devicesGrid = [
         { field: 'id', headerText: 'ID', width: '60', textAlign: 'Center' },
         { field: 'deviceName', headerText: 'Device/Host Name', width: '150', textAlign: 'Left' },
+        { field: 'user', headerText: 'User', width: '150', textAlign: 'Center' },
         { field: 'deviceType', headerText: 'Device Type', width: '100', textAlign: 'Center' },
         { field: 'manufacture', headerText: 'Manufacture', width: '150', textAlign: 'Center' },
-        { field: 'serialNumber', headerText: 'Serial Number', width: '150', textAlign: 'Center' },
         { 
             field: 'actions', 
             headerText: 'Actions', 
@@ -330,18 +331,17 @@ const Devices = () => {
                 <div className="flex justify-center space-x-2">
                     <button 
                         type="button"
-                        style={{ backgroundColor: currentColor }}
-                        className="text-white text-xs py-1 px-3 rounded-xl hover:opacity-80 transition duration-200"
+                        className="text-dark text-lg hover:bg-blue-300 py-1 px-3 rounded-xl transition duration-200"
                         onClick={() => handleView(props)}
                     >
-                        View
+                        {<CiZoomIn />}
                     </button>
                     <button 
                         type="button"
-                        className="bg-red-600 text-white text-xs py-1 px-3 rounded-xl hover:bg-red-700 transition duration-200"
+                        className="text-dark text-lg hover:bg-red-300 py-1 px-3 rounded-xl transition duration-200"
                         onClick={() => handleDelete(props)}
                     >
-                        Delete
+                        <CiTrash />
                     </button>
                 </div>
             ) 
@@ -367,25 +367,23 @@ const Devices = () => {
                     <button
                         type="button"
                         onClick={handleSearchById}
-                        className="px-3 py-2 rounded-lg text-sm text-white"
-                        style={{ backgroundColor: currentColor }}
+                        className="px-3 py-2 rounded-lg text-sm text-dark bg-yellow-300 hover:bg-yellow-400 transition duration-200"
                     >
-                        Search
+                        <CiSearch />
                     </button>
                     <button
                         type="button"
                         onClick={handleClearSearch}
-                        className="px-3 py-2 rounded-lg text-sm bg-gray-200 text-gray-800 hover:bg-gray-300"
+                        className="px-3 py-2 rounded-lg text-sm bg-red-300 text-gray-800 hover:bg-red-400"
                     >
-                        Clear
+                        <CiEraser />
                     </button>
                     <button
                         type="button"
-                        style={{ backgroundColor: currentColor }}
-                        className="w-full sm:w-auto text-white px-4 py-2 rounded-xl hover:opacity-80 transition duration-200 font-semibold text-sm text-center"
+                        className="w-full sm:w-auto bg-green-300 text-dark px-4 py-2 rounded-xl hover:bg-green-400 transition duration-200 font-semibold text-sm text-center"
                         onClick={handleOpenAddModal}
                     >
-                        + Add Device
+                        {<CiEdit />}
                     </button>
                 </div>
             </div>
