@@ -5,6 +5,7 @@ import { GridComponent, ColumnsDirective, ColumnDirective, Resize, Sort, Context
 import { contextMenuItems } from '../data/dummy';
 import { Header } from '../components';
 import { useStateContext } from '../contexts/ContextProvider';
+import { useNavigate } from 'react-router-dom';
 
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL; 
 const REST_API_URL = `${API_BASE_URL}/api/v1/acc`;
@@ -19,6 +20,7 @@ const Accounts = () => {
     const [selectedAccount, setSelectedAccount] = useState(null);
 
     const { currentColor, currentMode } = useStateContext();
+    const navigate = useNavigate();
 
     const getAuthHeaders = () => {
         const token = localStorage.getItem('authToken');
