@@ -407,6 +407,7 @@ const Devices = () => {
                     </button>
                     <button 
                         type="button"
+                        title="Delete Device"
                         className="text-dark text-lg hover:bg-red-300 py-1 px-3 rounded-xl transition duration-200"
                         onClick={() => handleDelete(props)}
                     >
@@ -434,22 +435,17 @@ const Devices = () => {
                         className="flex-1 sm:flex-initial px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
                     />
                     <button
-                        type="button"
-                        onClick={handleSearchById}
-                        className="px-3 py-2 rounded-lg text-sm text-dark bg-yellow-300 hover:bg-yellow-400 transition duration-200"
-                    >
-                        <CiSearch />
-                    </button>
-                    <button
+                        title="Clear Search"
                         type="button"
                         onClick={handleClearSearch}
-                        className="px-3 py-2 rounded-lg text-sm bg-red-300 text-gray-800 hover:bg-red-400"
+                        className="px-3 py-2 rounded-lg text-sm bg-red-300 text-gray-800 hover:bg-red-400 font-bold text-center"
                     >
                         <CiEraser />
                     </button>
                     <button
+                        title="Add Device"
                         type="button"
-                        className="w-full sm:w-auto bg-green-300 text-dark px-4 py-2 rounded-xl hover:bg-green-400 transition duration-200 font-semibold text-sm text-center"
+                        className="w-full sm:w-auto bg-green-300 text-dark px-3 py-2 rounded-lg hover:bg-green-400 font-bold text-sm text-center"
                         onClick={handleOpenAddModal}
                     >
                         {<CiEdit />}
