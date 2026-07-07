@@ -400,7 +400,7 @@ const Devices = () => {
                 <div className="flex justify-center space-x-2">
                     <button 
                         type="button"
-                        className="text-dark text-xl hover:bg-blue-300 py-1 px-3 rounded-xl transition duration-200 font-semibold"
+                        className="text-dark text-xl hover:bg-blue-300 py-1 px-3 rounded-xl transition duration-200 font-bold"
                         onClick={() => handleView(props)}
                     >
                         {<CiZoomIn />}
@@ -578,10 +578,14 @@ const Devices = () => {
                                     </div>
                                 </div>
                                 <div className="flex justify-end gap-3 mt-6 border-t pt-3">
-                                    <button type="button" className="px-4 py-2 rounded-xl text-sm bg-gray-300 text-gray-800 hover:bg-gray-400 transition duration-200" onClick={() => setIsEditingDevice(false)}>
-                                        <CiUndo />
+                                    <button 
+                                        type="button" 
+                                        className="px-4 py-2 rounded-xl text-sm bg-red-300 text-gray-800 hover:bg-red-400 transition duration-200" onClick={() => setIsEditingDevice(false)}>
+                                        Cancel
                                     </button>
-                                    <button type="submit" style={{ backgroundColor: currentColor }} className="px-5 py-2 rounded-xl text-sm text-white hover:opacity-90 transition duration-200">
+                                    <button 
+                                        type="submit"
+                                        className="px-5 py-2 rounded-xl text-sm text-dark bg-blue-300 hover:bg-blue-400 transition duration-200">
                                         Save Changes
                                     </button>
                                 </div>
