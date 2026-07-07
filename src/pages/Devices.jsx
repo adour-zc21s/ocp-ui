@@ -3,7 +3,7 @@ import axios from 'axios';
 import { Stacked, Pie, Button, LineChart, SparkLine } from '../components';
 import { GridComponent, ColumnsDirective, ColumnDirective, Resize, Sort, ContextMenu, Filter, Page, ExcelExport, PdfExport, Edit, Inject } from '@syncfusion/ej2-react-grids';
 import { contextMenuItems } from '../data/dummy';
-import { CiZoomIn, CiTrash, CiEdit, CiEraser, CiSearch} from "react-icons/ci";
+import { CiZoomIn, CiTrash, CiEdit, CiEraser, CiSearch, CiUndo} from "react-icons/ci";
 import { Header } from '../components';
 import { useStateContext } from '../contexts/ContextProvider';
 import { useNavigate } from 'react-router-dom';
@@ -400,7 +400,7 @@ const Devices = () => {
                 <div className="flex justify-center space-x-2">
                     <button 
                         type="button"
-                        className="text-dark text-lg hover:bg-blue-300 py-1 px-3 rounded-xl transition duration-200"
+                        className="text-dark text-xl hover:bg-blue-300 py-1 px-3 rounded-xl transition duration-200 font-semibold"
                         onClick={() => handleView(props)}
                     >
                         {<CiZoomIn />}
@@ -408,7 +408,7 @@ const Devices = () => {
                     <button 
                         type="button"
                         title="Delete Device"
-                        className="text-dark text-lg hover:bg-red-300 py-1 px-3 rounded-xl transition duration-200"
+                        className="text-dark text-xl hover:bg-red-300 py-1 px-3 rounded-xl transition duration-200 font-semibold"
                         onClick={() => handleDelete(props)}
                     >
                         <CiTrash />
@@ -438,14 +438,14 @@ const Devices = () => {
                         title="Clear Search"
                         type="button"
                         onClick={handleClearSearch}
-                        className="px-3 py-2 rounded-lg text-sm bg-red-300 text-gray-800 hover:bg-red-400 font-bold text-center"
+                        className="px-3 py-2 rounded-lg text-xl bg-red-300 text-gray-800 hover:bg-red-400 font-bold text-center"
                     >
                         <CiEraser />
                     </button>
                     <button
                         title="Add Device"
                         type="button"
-                        className="w-full sm:w-auto bg-green-300 text-dark px-3 py-2 rounded-lg hover:bg-green-400 font-bold text-sm text-center"
+                        className="w-full sm:w-auto bg-green-300 text-dark px-3 py-2 rounded-lg hover:bg-green-400 font-bold text-xl text-center"
                         onClick={handleOpenAddModal}
                     >
                         {<CiEdit />}
@@ -512,18 +512,19 @@ const Devices = () => {
                                 {!isEditingDevice && (
                                     <button
                                         type="button"
+                                        title="Edit Device"
                                         onClick={handleEditDevice}
-                                        className="px-3 py-2 rounded-lg text-sm bg-blue-100 text-blue-700 hover:bg-blue-200 transition duration-200"
+                                        className="px-3 py-2 rounded-lg text-sm text-blue-400 hover:text-blue-600 transition duration-200"
                                     >
                                         Edit
                                     </button>
                                 )}
-                                <button 
+                                {/* <button 
                                     onClick={handleCloseModal}
                                     className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 text-2xl font-semibold"
                                 >
                                     &times;
-                                </button>
+                                </button> */}
                             </div>
                         </div>
 
@@ -578,7 +579,7 @@ const Devices = () => {
                                 </div>
                                 <div className="flex justify-end gap-3 mt-6 border-t pt-3">
                                     <button type="button" className="px-4 py-2 rounded-xl text-sm bg-gray-300 text-gray-800 hover:bg-gray-400 transition duration-200" onClick={() => setIsEditingDevice(false)}>
-                                        Cancel
+                                        <CiUndo />
                                     </button>
                                     <button type="submit" style={{ backgroundColor: currentColor }} className="px-5 py-2 rounded-xl text-sm text-white hover:opacity-90 transition duration-200">
                                         Save Changes
@@ -642,8 +643,8 @@ const Devices = () => {
                                 <div className="flex justify-end mt-6 border-t pt-3">
                                     <button
                                         type="button"
-                                        style={{ backgroundColor: currentColor }}
-                                        className="text-white px-5 py-2 rounded-xl text-sm hover:opacity-90 transition duration-200"
+                                        title="Close"
+                                        className="text-white bg-red-300 hover:bg-red-400 px-5 py-2 rounded-xl text-sm hover:opacity-90 transition duration-200"
                                         onClick={handleCloseModal}
                                     >
                                         Close
