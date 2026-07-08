@@ -243,16 +243,19 @@ const Devices = () => {
         setSearchId(e.target.value);
     };
 
-    const handleSearchById = async () => {
+    const handleSearchByName = async () => {
         if (!searchId) {
-            alert('Please enter a device ID to search');
+            alert('Please enter a device/host name to search');
             return;
         }
 
-        const trimmedSearchId = searchId.trim();
-        const localMatch = deviceData.find((device) => String(device.id) === String(trimmedSearchId));
-        if (localMatch) {
-            setDeviceData([localMatch]);
+        const trimmed = searchId.trim();
+        // local-first: case-insensitive partial match
+        const localMatches = deviceData.filter((device) =>
+            String(device.deviceName || '').toLowerCase().includes(trimmed.toLowerCase())
+        );
+        if (localMatches && localMatches.length > 0) {
+            setDeviceData(localMatches);
             setError(null);
             return;
         }
@@ -268,10 +271,18 @@ const Devices = () => {
 
             let response;
             try {
-                response = await axios.get(`${REST_API_URL}/?id=${encodeURIComponent(trimmedSearchId)}`, { headers });
+                response = await axios.get(`${REST_API_URL}/?name=${encodeURIComponent(trimmed)}`, { headers });
             } catch (firstErr) {
                 if (firstErr.response?.status === 404) {
-                    response = await axios.get(`${REST_API_URL}/${encodeURIComponent(trimmedSearchId)}`, { headers });
+                    try {
+                        response = await axios.get(`${REST_API_URL}/?q=${encodeURIComponent(trimmed)}`, { headers });
+                    } catch (secondErr) {
+                        if (secondErr.response?.status === 404) {
+                            response = await axios.get(`${REST_API_URL}/name/${encodeURIComponent(trimmed)}`, { headers });
+                        } else {
+                            throw secondErr;
+                        }
+                    }
                 } else {
                     throw firstErr;
                 }
@@ -386,16 +397,15 @@ const Devices = () => {
     };
 
     const devicesGrid = [
-        { field: 'id', headerText: 'ID', width: '60', textAlign: 'Center', customAttributes: { class: 'large-bold-header' } },
-        { field: 'deviceName', headerText: 'Device/Host Name', width: '150', textAlign: 'Left', customAttributes: { class: 'large-bold-header' } },
-        { field: 'user', headerText: 'User', width: '100', textAlign: 'Center', customAttributes: { class: 'large-bold-header' } },
-        { field: 'ipAddress', headerText: 'IP Address', width: '150', textAlign: 'Center', customAttributes: { class: 'large-bold-header' } },
+        { field: 'id', headerText: 'ID', width: '60', textAlign: 'Center'},
+        { field: 'deviceName', headerText: 'Device/Host Name', width: '150', textAlign: 'Left'},
+        { field: 'user', headerText: 'User', width: '100', textAlign: 'Center'},
+        { field: 'ipAddress', headerText: 'IP Address', width: '150', textAlign: 'Center'},
         { 
             field: 'actions', 
             headerText: 'Actions', 
             width: '160', 
             textAlign: 'Center', 
-            customAttributes: { class: 'large-bold-header' },
             template: (props) => (
                 <div className="flex justify-center space-x-2">
                     <button 
@@ -430,26 +440,26 @@ const Devices = () => {
                     <form
                         onSubmit={(e) => {
                             e.preventDefault();
-                            handleSearchById();
+                            handleSearchByName();
                         }}
                         className="flex flex-wrap items-center gap-2"
                     >
                         <input
                             type="text"
-                            placeholder="Search by ID"
+                            placeholder="Search by name"
                             value={searchId}
                             onChange={handleSearchInputChange}
                             className="flex-1 sm:flex-initial px-2 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
                         />
                     </form>
-                    {/* <button
+                    <button
                         title="Clear Search"
                         type="button"
                         onClick={handleClearSearch}
                         className="px-2 py-2 text-xl text-red-500 font-bold text-center rounded-xl bg-red-100 hover:bg-red-200 transition duration-200"
                     >
                         <PiEraserDuotone />
-                    </button> */}
+                    </button>
                     <button
                         title="Add Device"
                         type="button"
