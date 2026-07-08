@@ -146,45 +146,45 @@ const Login = () => {
         <form onSubmit={handleLogin}>
           <div className="mb-5">
             <label htmlFor="email" className="block text-gray-700 text-sm font-medium mb-2">
-              Email Address
+              <span className="block mb-2">Email Address</span>
+              <div className="flex items-center border border-gray-300 rounded-lg px-3 py-2 focus-within:border-blue-500 focus-within:ring-1 focus-within:ring-blue-500">
+                <FiMail className="text-gray-400 mr-2" />
+                <input
+                  id="email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="Enter your email"
+                  className="w-full bg-transparent outline-none text-gray-700"
+                  required
+                />
+              </div>
             </label>
-            <div className="flex items-center border border-gray-300 rounded-lg px-3 py-2 focus-within:border-blue-500 focus-within:ring-1 focus-within:ring-blue-500">
-              <FiMail className="text-gray-400 mr-2" />
-              <input
-                id="email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="Enter your email"
-                className="w-full bg-transparent outline-none text-gray-700"
-                required
-              />
-            </div>
           </div>
 
           <div className="mb-5">
             <label htmlFor="password" className="block text-gray-700 text-sm font-medium mb-2">
-              Password
+              <span className="block mb-2">Password</span>
+              <div className="flex items-center border border-gray-300 rounded-lg px-3 py-2 focus-within:border-blue-500 focus-within:ring-1 focus-within:ring-blue-500">
+                <FiLock className="text-gray-400 mr-2" />
+                <input
+                  id="password"
+                  type={showPassword ? 'text' : 'password'}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Enter your password"
+                  className="w-full bg-transparent outline-none text-gray-700"
+                  required
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="text-gray-400 hover:text-gray-600"
+                >
+                  {showPassword ? <FiEyeOff /> : <FiEye />}
+                </button>
+              </div>
             </label>
-            <div className="flex items-center border border-gray-300 rounded-lg px-3 py-2 focus-within:border-blue-500 focus-within:ring-1 focus-within:ring-blue-500">
-              <FiLock className="text-gray-400 mr-2" />
-              <input
-                id="password"
-                type={showPassword ? 'text' : 'password'}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Enter your password"
-                className="w-full bg-transparent outline-none text-gray-700"
-                required
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="text-gray-400 hover:text-gray-600"
-              >
-                {showPassword ? <FiEyeOff /> : <FiEye />}
-              </button>
-            </div>
           </div>
 
           <div className="mb-6">
