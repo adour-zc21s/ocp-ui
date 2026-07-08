@@ -4,28 +4,25 @@ import axios from 'axios';
 import { FiMail, FiLock, FiEye, FiEyeOff } from 'react-icons/fi';
 import { useStateContext } from '../contexts/ContextProvider';
 
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL; 
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
 const REST_API_URL = `${API_BASE_URL}/api/v1/auth/authenticate`;
 
-// Create a standalone axios instance for login to avoid interceptor conflicts
 const loginAxios = axios.create({
   baseURL: API_BASE_URL,
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json',
   },
-  // Add CORS credentials
   withCredentials: false,
 });
 
-// Add response interceptor to handle errors
 loginAxios.interceptors.response.use(
   (response) => response,
   (error) => {
     console.error('Login axios error:', error);
     return Promise.reject(error);
-  }
+  },
 );
 
 const Login = () => {
@@ -38,7 +35,6 @@ const Login = () => {
   const navigate = useNavigate();
   const { currentColor } = useStateContext();
 
-  // Check if already logged in
   React.useEffect(() => {
     const authToken = localStorage.getItem('authToken');
     if (authToken) {
@@ -49,8 +45,7 @@ const Login = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     setError('');
-    
-    // Validate inputs
+
     if (!email || !password) {
       setError('Please enter both email and password.');
       return;
@@ -64,7 +59,6 @@ const Login = () => {
     setLoading(true);
 
     try {
-      // Try sending request with different possible field names
       const requestPayload = {
         email,
         password,
@@ -77,7 +71,6 @@ const Login = () => {
 
       console.log('Login response:', response.data);
 
-      // Handle different response formats - API returns access_token
       const token = response.data.access_token || response.data.token || response.data.accessToken || response.data.jwt;
       const user = {
         id: response.data.id,
@@ -87,7 +80,6 @@ const Login = () => {
 
       if (!token) {
         setLoading(false);
-        // Show the actual response structure for debugging
         const responseKeys = Object.keys(response.data);
         const responseStr = JSON.stringify(response.data, null, 2);
         const errorMsg = `Login successful but token not found. Response keys: ${responseKeys.join(', ')}. Full response: ${responseStr}`;
@@ -96,7 +88,6 @@ const Login = () => {
         return;
       }
 
-      // Store token and user info
       localStorage.setItem('authToken', token);
       localStorage.setItem('user', JSON.stringify(user));
 
@@ -104,12 +95,10 @@ const Login = () => {
         localStorage.setItem('rememberMe', 'true');
       }
 
-      // Use setTimeout to ensure state update completes before navigation
       setLoading(false);
       setTimeout(() => {
         navigate('/', { replace: true });
       }, 100);
-      
     } catch (err) {
       setLoading(false);
       console.error('Login error details:', {
@@ -118,10 +107,9 @@ const Login = () => {
         data: err.response?.data,
         config: err.config,
       });
-      
-      // Better error message handling
+
       let errorMessage = 'Login failed. Please try again.';
-      
+
       if (err.response?.status === 401 || err.response?.status === 400) {
         errorMessage = err.response?.data?.message || 'Invalid email or password.';
       } else if (err.response?.status === 404) {
@@ -133,7 +121,7 @@ const Login = () => {
       } else if (err.message?.includes('CORS') || err.message === 'Network Error' || !err.response) {
         errorMessage = 'Cannot connect to server make sure backend is running.';
       }
-      
+
       setError(errorMessage);
     }
   };
@@ -141,14 +129,12 @@ const Login = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
       <div className="w-full max-w-md bg-white rounded-lg shadow-xl p-8">
-        {/* Header */}
         <div className="text-center mb-8">
           <h1 className="text-3xl font-extrabold text-gray-900">OCP Dash</h1>
           <p className="text-gray-600 mt-2">Welcome back</p>
           <p className="text-gray-600 text-sm">String200!</p>
         </div>
 
-        {/* Error Message */}
         {error && (
           <div className="mb-4 p-4 bg-red-50 border border-red-300 text-red-800 rounded-lg text-sm">
             <div className="font-semibold mb-1">Login Error</div>
@@ -157,16 +143,15 @@ const Login = () => {
           </div>
         )}
 
-        {/* Login Form */}
         <form onSubmit={handleLogin}>
-          {/* Email Input */}
           <div className="mb-5">
-            <label className="block text-gray-700 text-sm font-medium mb-2">
+            <label htmlFor="email" className="block text-gray-700 text-sm font-medium mb-2">
               Email Address
             </label>
             <div className="flex items-center border border-gray-300 rounded-lg px-3 py-2 focus-within:border-blue-500 focus-within:ring-1 focus-within:ring-blue-500">
               <FiMail className="text-gray-400 mr-2" />
               <input
+                id="email"
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -177,14 +162,14 @@ const Login = () => {
             </div>
           </div>
 
-          {/* Password Input */}
           <div className="mb-5">
-            <label className="block text-gray-700 text-sm font-medium mb-2">
+            <label htmlFor="password" className="block text-gray-700 text-sm font-medium mb-2">
               Password
             </label>
             <div className="flex items-center border border-gray-300 rounded-lg px-3 py-2 focus-within:border-blue-500 focus-within:ring-1 focus-within:ring-blue-500">
               <FiLock className="text-gray-400 mr-2" />
               <input
+                id="password"
                 type={showPassword ? 'text' : 'password'}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -202,10 +187,10 @@ const Login = () => {
             </div>
           </div>
 
-          {/* Remember Me */}
           <div className="mb-6">
-            <label className="flex items-center">
+            <label htmlFor="rememberMe" className="flex items-center">
               <input
+                id="rememberMe"
                 type="checkbox"
                 checked={rememberMe}
                 onChange={(e) => setRememberMe(e.target.checked)}
@@ -215,7 +200,6 @@ const Login = () => {
             </label>
           </div>
 
-          {/* Login Button */}
           <button
             type="submit"
             disabled={loading}
@@ -226,7 +210,6 @@ const Login = () => {
           </button>
         </form>
 
-        {/* Footer */}
         <div className="mt-6 text-center text-sm text-gray-500 border-t pt-4">
           <p className="mb-2 text-xs font-semibold">Open Class Programming</p>
         </div>
