@@ -3,7 +3,7 @@ import axios from 'axios';
 import { Stacked, Pie, Button, LineChart, SparkLine } from '../components';
 import { GridComponent, ColumnsDirective, ColumnDirective, Resize, Sort, ContextMenu, Filter, Page, ExcelExport, PdfExport, Edit, Inject } from '@syncfusion/ej2-react-grids';
 import { contextMenuItems } from '../data/dummy';
-import { CiZoomIn, CiTrash, CiEdit, CiEraser, CiSearch, CiUndo} from "react-icons/ci";
+import { PiMagnifyingGlassPlusDuotone, PiPenDuotone, PiTrashDuotone, PiEraserDuotone} from "react-icons/pi";
 import { Header } from '../components';
 import { useStateContext } from '../contexts/ContextProvider';
 import { useNavigate } from 'react-router-dom';
@@ -386,32 +386,32 @@ const Devices = () => {
     };
 
     const devicesGrid = [
-        { field: 'id', headerText: 'ID', width: '60', textAlign: 'Center' },
-        { field: 'deviceName', headerText: 'Device/Host Name', width: '150', textAlign: 'Left' },
-        { field: 'user', headerText: 'User', width: '150', textAlign: 'Center' },
-        { field: 'deviceType', headerText: 'Device Type', width: '100', textAlign: 'Center' },
-        { field: 'ipAddress', headerText: 'IP Address', width: '150', textAlign: 'Center' },
+        { field: 'id', headerText: 'ID', width: '60', textAlign: 'Center', customAttributes: { class: 'large-bold-header' } },
+        { field: 'deviceName', headerText: 'Device/Host Name', width: '150', textAlign: 'Left', customAttributes: { class: 'large-bold-header' } },
+        { field: 'user', headerText: 'User', width: '100', textAlign: 'Center', customAttributes: { class: 'large-bold-header' } },
+        { field: 'ipAddress', headerText: 'IP Address', width: '150', textAlign: 'Center', customAttributes: { class: 'large-bold-header' } },
         { 
             field: 'actions', 
             headerText: 'Actions', 
             width: '160', 
             textAlign: 'Center', 
+            customAttributes: { class: 'large-bold-header' },
             template: (props) => (
                 <div className="flex justify-center space-x-2">
                     <button 
                         type="button"
-                        className="text-dark text-xl hover:bg-blue-300 py-1 px-3 rounded-xl transition duration-200 font-bold"
+                        className="text-blue-500 text-xl py-1 px-2 transition duration-200 font-bold"
                         onClick={() => handleView(props)}
                     >
-                        {<CiZoomIn />}
+                        {<PiMagnifyingGlassPlusDuotone />}
                     </button>
                     <button 
                         type="button"
                         title="Delete Device"
-                        className="text-dark text-xl hover:bg-red-300 py-1 px-3 rounded-xl transition duration-200 font-semibold"
+                        className="text-red-500 text-xl py-1 px-3 transition duration-200 font-semibold"
                         onClick={() => handleDelete(props)}
                     >
-                        <CiTrash />
+                        <PiTrashDuotone />
                     </button>
                 </div>
             ) 
@@ -427,28 +427,37 @@ const Devices = () => {
 
                 {/* flex-wrap ensures components wrap line-by-line if they run out of space */}
                 <div className="flex flex-wrap items-center gap-2">
-                    <input
-                        type="text"
-                        placeholder="Search by ID"
-                        value={searchId}
-                        onChange={handleSearchInputChange}
-                        className="flex-1 sm:flex-initial px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-                    />
-                    <button
+                    <form
+                        onSubmit={(e) => {
+                            e.preventDefault();
+                            handleSearchById();
+                        }}
+                        className="flex flex-wrap items-center gap-2"
+                    >
+                        <input
+                            type="text"
+                            placeholder="Search by ID"
+                            value={searchId}
+                            onChange={handleSearchInputChange}
+                            className="flex-1 sm:flex-initial px-2 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                        />
+                    </form>
+                    {/* <button
                         title="Clear Search"
                         type="button"
                         onClick={handleClearSearch}
-                        className="px-3 py-2 rounded-lg text-xl bg-red-300 text-gray-800 hover:bg-red-400 font-bold text-center"
+                        className="px-2 py-2 text-xl text-red-500 font-bold text-center rounded-xl bg-red-100 hover:bg-red-200 transition duration-200"
                     >
-                        <CiEraser />
-                    </button>
+                        <PiEraserDuotone />
+                    </button> */}
                     <button
                         title="Add Device"
                         type="button"
-                        className="w-full sm:w-auto bg-green-300 text-dark px-3 py-2 rounded-lg hover:bg-green-400 font-bold text-xl text-center"
+                        className="w-full sm:w-auto text-green-500 px-3 py-2 rounded-xl text-xs bg-green-200 hover:bg-green-300 transition duration-200"
                         onClick={handleOpenAddModal}
                     >
-                        {<CiEdit />}
+                        New Device
+                        {/* {<PiPenDuotone />} */}
                     </button>
                 </div>
             </div>
@@ -492,7 +501,7 @@ const Devices = () => {
             {/* --- VIEW MODAL --- */}
             {isModalOpen && selectedDevice && (
                 <div className="fixed inset-0 z-[99999] flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm animate-fade-in" >
-                    <div className="relative overflow-hidden bg-white dark:bg-secondary-dark-bg w-11/12 md:w-1/2 p-6 rounded-2xl shadow-2xl border border-gray-100 transform transition-all scale-100 max-h-screen overflow-y-auto">
+                    <div className="relative overflow-hidden bg-white dark:bg-secondary-dark-bg w-11/12 max-w-3xl md:w-2/5 xl:w-[36rem] p-6 rounded-2xl shadow-2xl border border-gray-100 transform transition-all scale-100 max-h-[85vh] overflow-y-auto">
 
                         {/* WATERMARK PLACED INSIDE THE BOX */}
                         {/* ADDED: z-0 */}
@@ -601,10 +610,10 @@ const Devices = () => {
                                         <p className="font-medium mb-3">{selectedDevice.deviceName || '-'}</p>
                                     </div>
                                     <div>
-                                        <p className="text-xs text-gray-400 uppercase tracking-wider">Manufacture</p>
-                                        <p className="font-medium mb-3">{selectedDevice.manufacture || '-'}</p>
-                                        <p className="text-xs text-gray-400 uppercase tracking-wider">Device Type</p>
-                                        <p className="font-medium mb-3">{selectedDevice.deviceType || '-'}</p>
+                                        <p className="text-xs text-gray-400 uppercase tracking-wider">Password</p>
+                                        <p className="font-medium mb-3">{selectedDevice.password || '-'}</p>
+                                        <p className="text-xs text-gray-400 uppercase tracking-wider">Password Portal</p>
+                                        <p className="font-medium mb-3">{selectedDevice.passwordPortal || '-'}</p>
                                     </div>
                                 </div>
 

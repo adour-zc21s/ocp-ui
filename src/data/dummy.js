@@ -8,7 +8,9 @@ import { IoMdContacts } from 'react-icons/io';
 import { RiContactsLine, RiStockLine } from 'react-icons/ri';
 import { MdOutlineSupervisorAccount } from 'react-icons/md';
 
-import { CiMonitor, CiMoneyCheck1, CiFlag1, CiUser, CiBoxes, CiMap} from "react-icons/ci";
+import { CiBoxes, CiMap} from "react-icons/ci";
+
+import { PiListNumbersDuotone, PiUsersThreeDuotone, PiChartLineUpDuotone, PiDevicesDuotone, PiGitBranchDuotone, PiIdentificationCardDuotone} from "react-icons/pi";
 
 import { HiOutlineRefresh } from 'react-icons/hi';
 import { TiTick } from 'react-icons/ti';
@@ -479,7 +481,7 @@ export const links = [
     links: [
       {
         name: 'Ecommerce',
-        icon: <CiMap />,
+        icon: <PiChartLineUpDuotone />,
       },
     ],
   },
@@ -489,23 +491,23 @@ export const links = [
     links: [
       {
         name: 'devices',
-        icon: <CiMonitor />,
+        icon: <PiDevicesDuotone />,
       },
       {
         name: 'branches',
-        icon: <CiFlag1 />,
+        icon: <PiGitBranchDuotone />,
       },
       {
         name: 'accounts',
-        icon: <CiMoneyCheck1 />,
+        icon: <PiIdentificationCardDuotone />,
       },
       {
         name: 'customers',
-        icon: <CiUser />,
+        icon: <PiUsersThreeDuotone />,
       },
       {
         name: 'items',
-        icon: <CiBoxes />,
+        icon: <PiListNumbersDuotone />,
       },
     ],
   },
