@@ -33,13 +33,14 @@ module.exports = {
       2,
       550,
     ],
-    'no-multiple-empty-lines': [
-      'error',
-      {
-        max: 1,
-        maxEOF: 1,
-      },
-    ],
+    // 'no-multiple-empty-lines': [
+    //   'error',
+    //   {
+    //     max: 1,
+    //     maxEOF: 1,
+    //   },
+    // ],
+    'no-multiple-empty-lines': 0,
     'no-underscore-dangle': [
       'error',
       {
