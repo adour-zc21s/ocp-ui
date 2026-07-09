@@ -449,7 +449,7 @@ const Devices = () => {
                             placeholder="Search by name"
                             value={searchId}
                             onChange={handleSearchInputChange}
-                            className="flex-1 sm:flex-initial px-2 py-2 border border-gray-300 rounded-xl bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                            className="flex-1 sm:flex-initial px-2 py-2 border border-gray-300 rounded-xl bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-300 text-sm"
                         />
                     </form>
                     <button
