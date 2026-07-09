@@ -18,6 +18,11 @@ module.exports = {
     'react',
   ],
   rules: {
+    'react/jsx-wrap-multilines': 0,
+    'jsx-a11y/label-has-associated-control': 0,
+    'react/jsx-indent': 0,
+    'react/jsx-indent-props': 0,
+    'no-trailing-spaces': 0,
     'react/function-component-definition': 0,
     'import/extensions': 0,
     'react/prop-types': 0,

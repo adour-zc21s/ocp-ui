@@ -112,7 +112,6 @@ const Items = () => {
             [name]: value
         }));
     };
-
     // Search handlers
     const handleSearchInputChange = (e) => {
         setSearchId(e.target.value);
@@ -274,7 +273,7 @@ const Items = () => {
             textAlign: 'Center', 
             template: (props) => (
                 <div className="flex justify-center space-x-2">
-                    <button 
+                    <button
                         type="button"
                         style={{ backgroundColor: currentColor }}
                         className="text-white text-xs py-1 px-3 rounded-xl hover:opacity-80 transition duration-200"
@@ -282,7 +281,7 @@ const Items = () => {
                     >
                         View
                     </button>
-                    <button 
+                    <button
                         type="button"
                         className="bg-red-600 text-white text-xs py-1 px-3 rounded-xl hover:bg-red-700 transition duration-200"
                         onClick={() => handleDelete(props)}

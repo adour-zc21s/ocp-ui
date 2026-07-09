@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { FiSettings } from 'react-icons/fi';
 import { TooltipComponent } from '@syncfusion/ej2-react-popups';
 
@@ -27,7 +27,6 @@ const App = () => {
         <Routes>
           {/* Login Route - No sidebar/navbar */}
           <Route path="/login" element={<Login />} />
-          
           {/* Dashboard Routes - Protected with authentication check */}
           <Route
             path="/*"
