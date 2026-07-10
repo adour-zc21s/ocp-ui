@@ -7,7 +7,7 @@ import { IoMdContacts } from 'react-icons/io';
 import { RiStockLine } from 'react-icons/ri';
 import { MdOutlineSupervisorAccount } from 'react-icons/md';
 
-import { PiListNumbersDuotone, PiUsersThreeDuotone, PiChartLineUpDuotone, PiDevicesDuotone, PiGitBranchDuotone, PiIdentificationCardDuotone } from 'react-icons/pi';
+import { PiTicketDuotone, PiListNumbersDuotone, PiUsersThreeDuotone, PiChartLineUpDuotone, PiDevicesDuotone, PiGitBranchDuotone, PiIdentificationCardDuotone } from 'react-icons/pi';
 
 import { HiOutlineRefresh } from 'react-icons/hi';
 import { TiTick } from 'react-icons/ti';
@@ -476,14 +476,14 @@ export const links = [
     title: 'Home',
     links: [
       {
-        name: 'Ecommerce',
+        name: 'Dashboard',
         icon: <PiChartLineUpDuotone />,
       },
     ],
   },
 
   {
-    title: 'Master Data',
+    title: 'Asset Management (Hardware)',
     links: [
       {
         name: 'devices',
@@ -504,6 +504,15 @@ export const links = [
       {
         name: 'items',
         icon: <PiListNumbersDuotone />,
+      },
+    ],
+  },
+  {
+    title: 'Assignment & Lifecycle',
+    links: [
+      {
+        name: 'tickets',
+        icon: <PiTicketDuotone />,
       },
     ],
   },

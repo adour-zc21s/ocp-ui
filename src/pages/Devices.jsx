@@ -17,13 +17,11 @@ const Devices = () => {
     const [searchId, setSearchId] = useState('');
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    
     // Modal states
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedDevice, setSelectedDevice] = useState(null);
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [isEditingDevice, setIsEditingDevice] = useState(false);
-    
     // Form states for adding device
     const [formData, setFormData] = useState({
         deviceName: '',
@@ -237,7 +235,6 @@ const Devices = () => {
             }
         }
     };
-
     // Search handlers
     const handleSearchInputChange = (e) => {
         setSearchId(e.target.value);
