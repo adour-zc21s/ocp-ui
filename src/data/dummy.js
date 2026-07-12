@@ -499,10 +499,6 @@ export const links = [
         icon: <PiGitBranchDuotone />,
       },
       {
-        name: 'customers',
-        icon: <PiUsersThreeDuotone />,
-      },
-      {
         name: 'accounts',
         icon: <PiIdentificationCardDuotone />,
       },
