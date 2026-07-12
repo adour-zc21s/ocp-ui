@@ -483,27 +483,28 @@ export const links = [
   },
 
   {
-    title: 'Asset Manag. (Hardware)',
+    title: 'Asset Manag',
     links: [
       {
         name: 'devices',
         icon: <PiDevicesDuotone />,
       },
+    ],
+  },
+    {
+    title: 'Control Manag',
+    links: [
       {
         name: 'branches',
         icon: <PiGitBranchDuotone />,
-      },
-      {
-        name: 'accounts',
-        icon: <PiIdentificationCardDuotone />,
       },
       {
         name: 'customers',
         icon: <PiUsersThreeDuotone />,
       },
       {
-        name: 'items',
-        icon: <PiListNumbersDuotone />,
+        name: 'accounts',
+        icon: <PiIdentificationCardDuotone />,
       },
     ],
   },
@@ -519,6 +520,10 @@ export const links = [
   {
     title: 'Point Of Sale',
     links: [
+      {
+        name: 'items',
+        icon: <PiListNumbersDuotone />,
+      },
       {
         name: 'orders',
         icon: <AiOutlineShoppingCart />,
