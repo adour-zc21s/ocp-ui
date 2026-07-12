@@ -8,7 +8,7 @@ import { useStateContext } from '../contexts/ContextProvider';
 import { useNavigate } from 'react-router-dom';
 
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL; 
-const REST_API_URL = `${API_BASE_URL}/api/v1/acc`;
+const REST_API_URL = `${API_BASE_URL}/api/v1/accounts`;
 
 const Accounts = () => {
     const [accountsData, setAccountsData] = useState([]);
@@ -104,10 +104,9 @@ const Accounts = () => {
 
     const accountsGrid = [
         { field: 'id', headerText: 'ID', width: '60', textAlign: 'Center' },
-        { field: 'nik', headerText: 'NIK', width: '150', textAlign: 'Center' },
         { field: 'name', headerText: 'Account Name', width: '200', textAlign: 'Left' },
-        { field: 'accountNumber', headerText: 'Acc. Number', width: '100', textAlign: 'Center' },
         { field: 'email', headerText: 'Email', width: '200', textAlign: 'Center' },
+        { field: 'accountNumber', headerText: 'Acc. Number', width: '100', textAlign: 'Center' },
         { 
             field: 'actions', 
             headerText: 'Actions', 
