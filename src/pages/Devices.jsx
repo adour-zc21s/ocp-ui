@@ -461,7 +461,7 @@ const Devices = () => {
                         title="Add Device"
                         type="button"
                         // className="w-full sm:w-auto text-green-500 px-3 py-2 rounded-xl text-xs bg-green-200 hover:bg-green-300 transition duration-200"
-                        className="text-green-500 px-3 py-2 rounded-xl text-xs bg-green-200 hover:bg-green-300 transition duration-200"
+                        className="text-green-700 px-3 py-2 rounded-xl text-xs bg-green-200 hover:bg-green-300 transition duration-200"
                         onClick={handleOpenAddModal}
                     >
                         New Device

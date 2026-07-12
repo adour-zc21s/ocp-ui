@@ -23,6 +23,7 @@ const Tickets = () => {
     const [isEditingTicket, setIsEditingTicket] = useState(false);
     // Form states for adding tickets
     const [formData, setFormData] = useState({
+        judul: '',
         departemen: '',
         priority: ''
     });
@@ -85,17 +86,21 @@ const Tickets = () => {
 
     // Action Handlers
     const createEmptyTicketForm = () => ({
+        noTiket: '',
+        judul: '',
         departemen: '',
         priority: ''
     });
     const mapTicketToFormData = (ticket = {}) => ({
+        noTiket: ticket.noTiket || '',
+        judul: ticket.judul || '',
         departemen: ticket.departemen || '',
         priority: ticket.priority || ''
     });    
     const handleView = (rowData) => {
         setSelectedTicket(rowData);
-        setEditFormData(mapDeviceToFormData(rowData));
-        setIsEditingDevice(false);
+        setEditFormData(mapTicketToFormData(rowData));
+        setIsEditingTicket(false);
         setIsModalOpen(true);
     };
     const handleCloseModal = () => {
@@ -172,7 +177,6 @@ const Tickets = () => {
             alert('Please enter a ticket name to search');
             return;
         }
-
         const trimmed = searchId.trim();
         // local-first: case-insensitive partial match
         const localMatches = ticketData.filter((ticket) =>
@@ -183,7 +187,6 @@ const Tickets = () => {
             setError(null);
             return;
         }
-
         try {
             setLoading(true);
             const headers = getAuthHeaders();
@@ -192,7 +195,6 @@ const Tickets = () => {
                 setLoading(false);
                 return;
             }
-
             let response;
             try {
                 response = await axios.get(`${REST_API_URL}/?name=${encodeURIComponent(trimmed)}`, { headers });
@@ -268,15 +270,12 @@ const Tickets = () => {
                 alert('Please log in before adding a ticket.');
                 return;
             }
-
             // Validate required fields
-            if (!formData.ticketName || !formData.ticketType || !formData.manufacture) {
-                alert('Please fill in all required fields (Ticket Name, Ticket Type, Manufacture)');
+            if (!formData.judul || !formData.departemen) {
+                alert('Please fill in all required fields (Ticket Judul, Departemen)');
                 return;
             }
-
             const response = await axios.post(REST_API_URL, formData, { headers });
-
             // Add new ticket to the list
             setTicketData(prevData => [...prevData, response.data]);
             alert('Ticket added successfully');
@@ -316,11 +315,42 @@ const Tickets = () => {
             setLoading(false);
         }
     };
+    const TicketTemplate = (props) => {
+      return (
+        <div>
+          <div style={{ fontWeight: 'bold' }}>{props.noTiket}</div>
+          <div style={{ color: '#666', fontSize: '12px' }}>{props.judul}</div>
+        </div>
+      );
+    };
     const ticketsGrid = [
-        { field: 'id', headerText: 'ID', width: '60', textAlign: 'Center'},
-        { field: 'noTiket', headerText: 'Ticket No', width: '150', textAlign: 'Left'},
-        { field: 'judul', headerText: 'Subject', width: '100', textAlign: 'Center'},
-        { field: 'branch', headerText: 'Branch', width: '150', textAlign: 'Center'},
+        { field: 'id', headerText: 'ID', width: '30', textAlign: 'Center'},
+        { field: 'ticketDetails', 
+            headerText: 'Ticket No / Subject', 
+            width: '250', 
+            textAlign: 'Left',
+            template: TicketTemplate
+        },
+        { field: 'dibuatOleh', headerText: 'Created By', width: '100', textAlign: 'Center'},
+        { 
+            field: 'status', 
+            headerText: 'Status', 
+            width: '90', 
+            textAlign: 'Center',
+            template: (props) => {
+                const isOpen = props.status === 'Open';
+                return (
+                    <span className={`inline-block px-3 py-1 rounded-full text-xs font-bold tracking-wide ${
+                        isOpen 
+                            ? 'bg-green-100 text-green-500' 
+                            : 'bg-red-100 text-red-500'
+                    }`}>
+                        {props.status}
+                    </span>
+                );
+            }
+        },
+        { field: 'createdAt', headerText: 'Created At', width: '100', textAlign: 'Center'},
         { 
             field: 'actions', 
             headerText: 'Actions', 
@@ -333,7 +363,7 @@ const Tickets = () => {
                         className="text-blue-500 text-xl py-1 px-2 transition duration-200 font-bold"
                         onClick={() => handleView(props)}
                     >
-                        {<PiMagnifyingGlassPlusDuotone />}
+                        <PiMagnifyingGlassPlusDuotone />
                     </button>
                     <button 
                         type="button"
@@ -381,7 +411,7 @@ const Tickets = () => {
                         title="Add Ticket"
                         type="button"
                         // className="w-full sm:w-auto text-green-500 px-3 py-2 rounded-xl text-xs bg-green-200 hover:bg-green-300 transition duration-200"
-                        className="text-green-500 px-3 py-2 rounded-xl text-xs bg-green-200 hover:bg-green-300 transition duration-200"
+                        className="text-green-700 px-3 py-2 rounded-xl text-xs bg-green-200 hover:bg-green-300 transition duration-200"
                         onClick={handleOpenAddModal}
                     >
                         New Ticket
@@ -422,6 +452,181 @@ const Tickets = () => {
                     </ColumnsDirective>
                     <Inject services={[Resize, Sort, ContextMenu, Filter, Page, ExcelExport, Edit, PdfExport]} />
                 </GridComponent>
+            )}
+            {/* --- VIEW MODAL --- */}
+            {isModalOpen && selectedTicket && (
+                <div className="fixed inset-0 z-[99999] flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm animate-fade-in" >
+                    <div className="relative overflow-hidden bg-white dark:bg-secondary-dark-bg w-11/12 max-w-3xl md:w-2/5 xl:w-[36rem] p-6 rounded-2xl shadow-2xl border border-gray-100 transform transition-all scale-100 max-h-[85vh] overflow-y-auto">
+
+                        {/* WATERMARK PLACED INSIDE THE BOX */}
+                        {/* ADDED: z-0 */}
+                        <img 
+                            src="/images/watermark.png" 
+                            alt="" 
+                            aria-hidden="true" 
+                            className="absolute inset-0 z-0 w-full h-full object-contain opacity-20 pointer-events-none select-none" 
+                        />
+                        
+                        {/* Modal Header */}
+                        <div className="flex justify-between items-center border-b pb-3 mb-4">
+                            <h3 className="text-xl font-semibold text-gray-800 dark:text-gray-200">
+                                Ticket Details
+                            </h3>
+                            <div className="flex items-center gap-2">
+                                {!isEditingTicket && (
+                                    <button
+                                        type="button"
+                                        title="Edit Ticket"
+                                        onClick={handleEditTicket}
+                                        className="px-3 py-2 rounded-lg text-sm text-blue-400 hover:text-blue-600 transition duration-200"
+                                    >
+                                        Edit
+                                    </button>
+                                )}
+                                {/* <button 
+                                    onClick={handleCloseModal}
+                                    className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 text-2xl font-semibold"
+                                >
+                                    &times;
+                                </button> */}
+                            </div>
+                        </div>
+
+                        {isEditingTicket ? (
+                            <form onSubmit={handleSaveEditedTicket} className="space-y-4">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="block text-xs text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-1">Ticket ID <span className="text-red-500">*</span></label>
+                                        <input type="text" name="ticketId" value={editFormData.ticketId} onChange={handleEditFormChange} className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500" required />
+                                    </div>
+                                </div>
+                                <div className="flex justify-end gap-3 mt-6 border-t pt-3">
+                                    <button 
+                                        type="button" 
+                                        className="px-4 py-2 rounded-xl text-sm bg-red-300 text-gray-800 hover:bg-red-400 transition duration-200" onClick={() => setIsEditingTicket(false)}>
+                                        Cancel
+                                    </button>
+                                    <button 
+                                        type="submit"
+                                        className="px-5 py-2 rounded-xl text-sm text-dark bg-blue-300 hover:bg-blue-400 transition duration-200">
+                                        Save Changes
+                                    </button>
+                                </div>
+                            </form>
+                        ) : (
+                            <>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-700 dark:text-gray-300">
+                                    {/* <h3 className="text-sm font-semibold col-span-2 mb-2 text-gray-400 dark:text-gray-200">Identity & Classification</h3> */}
+                                    <div>
+                                        <p className="text-xs text-gray-400 uppercase tracking-wider">Ticket Number</p>
+                                        <p className="font-medium mb-3">{selectedTicket.noTiket || '-'}</p>
+                                        <p className="text-xs text-gray-400 uppercase tracking-wider">Judul</p>
+                                        <p className="font-medium mb-3">{selectedTicket.judul || '-'}</p>
+                                    </div>
+                                    <div>
+                                        <p className="text-xs text-gray-400 uppercase tracking-wider">Branch</p>
+                                        <p className="font-medium mb-3">{selectedTicket.branch || '-'}</p>
+                                        <p className="text-xs text-gray-400 uppercase tracking-wider">Departemen</p>
+                                        <p className="font-medium mb-3">{selectedTicket.departemen || '-'}</p>
+                                    </div>
+                                    {/* Description */}
+                                    <div className="col-span-1 md:col-span-2">
+                                        <p className="text-xs text-gray-400 uppercase tracking-wider">Description</p>
+                                        <p className="font-medium mb-3">{selectedTicket.deskripsi || '-'}</p>
+                                    </div>
+                                </div>
+
+                                <div className="flex justify-end mt-6 border-t pt-3">
+                                    <button
+                                        type="button"
+                                        title="Close"
+                                        className="text-white bg-red-300 hover:bg-red-400 px-5 py-2 rounded-xl text-sm hover:opacity-90 transition duration-200"
+                                        onClick={handleCloseModal}
+                                    >
+                                        Close
+                                    </button>
+                                </div>
+                            </>
+                        )}
+                    </div>
+                </div>
+            )}
+            {/* --- ADD MODAL --- */}
+             {isAddModalOpen && (
+                <div className="fixed inset-0 z-[99999] flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm animate-fade-in">
+                    <div className="bg-white dark:bg-secondary-dark-bg w-11/12 md:w-1/2 p-6 rounded-2xl shadow-2xl border border-gray-100 transform transition-all scale-100 max-h-screen overflow-y-auto">
+                        
+                        {/* Modal Header */}
+                        <div className="flex justify-between items-center border-b pb-3 mb-4">
+                            <h3 className="text-xl font-semibold text-gray-800 dark:text-gray-200">
+                                Add New Ticket
+                            </h3>
+                            <button 
+                                onClick={handleCloseAddModal}
+                                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 text-2xl font-semibold"
+                            >
+                                &times;
+                            </button>
+                        </div>
+
+                        {/* Modal Form */}
+                        <form onSubmit={handleAddTicket}>
+                            {/* Identity & Classification */}
+                            <div className="mb-4">
+                                {/* <h4 className="text-sm font-semibold mb-3 text-gray-400 dark:text-gray-200">Identity & Classification</h4> */}
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="block text-xs text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-1">
+                                            Judul <span className="text-red-500">*</span>
+                                        </label>
+                                        <input
+                                            type="text"
+                                            name="judul"
+                                            value={formData.judul}
+                                            onChange={handleFormChange}
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            required
+                                            autoComplete="off"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-1">
+                                            Departemen <span className="text-red-500">*</span>
+                                        </label>
+                                        <input
+                                            type="text"
+                                            name="departemen"
+                                            value={formData.departemen}
+                                            onChange={handleFormChange}
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            required
+                                            autoComplete="off"
+                                        />
+                                    </div>
+
+                                </div>
+                            </div>
+
+                            {/* Modal Footer */}
+                            <div className="flex justify-end gap-3 mt-6 border-t pt-3">
+                                <button
+                                    type="button"
+                                    className="px-4 py-2 rounded-xl text-sm bg-gray-300 dark:bg-gray-600 text-gray-800 dark:text-gray-100 hover:bg-gray-400 transition duration-200"
+                                    onClick={handleCloseAddModal}
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    type="submit"
+                                    style={{ backgroundColor: currentColor }}
+                                    className="px-5 py-2 rounded-xl text-sm text-white hover:opacity-90 transition duration-200"
+                                >
+                                    Add Ticket
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
             )}
         </div>
     );

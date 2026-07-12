@@ -483,7 +483,7 @@ export const links = [
   },
 
   {
-    title: 'Asset Management (Hardware)',
+    title: 'Asset Manag. (Hardware)',
     links: [
       {
         name: 'devices',
