@@ -13,6 +13,7 @@ const REST_API_URL = `${API_BASE_URL}/api/v1/tickets`;
 
 const Tickets = () => {
     const [ticketData, setTicketData] = useState([]);
+    const [departments, setDepartments] = useState([]);
     const [searchId, setSearchId] = useState('');
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -82,6 +83,32 @@ const Tickets = () => {
             }
         };
         fetchTickets();
+    }, []);
+
+    // Fetch department
+    useEffect(() => {
+        const fetchDepartments = async () => {
+            try {
+                const headers = getAuthHeaders();
+                if (!headers) {
+                    return;
+                }
+
+                const response = await axios.get(`${REST_API_URL}/departments`, { headers });
+
+                let data = response.data;
+                if (data.data) data = data.data;
+                
+                if (Array.isArray(data)) {
+                    setDepartments(data);
+                }
+            } catch (error) {
+                if (!handleAuthError(error)) {
+                    console.error('Failed to load departments:', error);
+                }
+            }
+        };
+        fetchDepartments();
     }, []);
 
     // Action Handlers
@@ -318,7 +345,7 @@ const Tickets = () => {
     const TicketTemplate = (props) => {
       return (
         <div>
-          <div style={{ fontWeight: 'bold' }}>{props.noTiket}</div>
+          <div style={{ fontWeight: 'bold', fontSize: '14px' }}>{props.noTiket}</div>
           <div style={{ color: '#666', fontSize: '12px' }}>{props.judul}</div>
         </div>
       );
@@ -593,15 +620,20 @@ const Tickets = () => {
                                         <label className="block text-xs text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-1">
                                             Departemen <span className="text-red-500">*</span>
                                         </label>
-                                        <input
-                                            type="text"
+                                        <select
                                             name="departemen"
                                             value={formData.departemen}
                                             onChange={handleFormChange}
                                             className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                             required
-                                            autoComplete="off"
-                                        />
+                                        >
+                                            <option value="">Select a department</option>
+                                            {departments.map((dept) => (
+                                                <option key={dept.id || dept} value={dept.name || dept}>
+                                                    {dept.name || dept}
+                                                </option>
+                                            ))}
+                                        </select>
                                     </div>
 
                                 </div>
