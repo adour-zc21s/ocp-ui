@@ -4,7 +4,7 @@ import { FiSettings } from 'react-icons/fi';
 import { TooltipComponent } from '@syncfusion/ej2-react-popups';
 
 import { Navbar, Footer, Sidebar, ThemeSettings, ProtectedRoute } from './components';
-import { Login, Devices, Tickets, Items, Accounts, Branches, Ecommerce, Orders, Calendar, Employees, Stacked, Pyramid, Clients, Kanban, Line, Area, Bar, Pie, Financial, ColorPicker, ColorMapping, Editor } from './pages';
+import { Login, Devices, Tickets, Items, Accounts, Branches, Ecommerce, Orders, Calendar, Employees, Stacked, Pyramid, Kanban, Line, Area, Bar, Pie, Financial, ColorPicker, ColorMapping, Editor } from './pages';
 import './App.css';
 
 import { useStateContext } from './contexts/ContextProvider';
