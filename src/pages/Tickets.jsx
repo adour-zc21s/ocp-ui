@@ -288,7 +288,7 @@ const Tickets = () => {
         }
     };
     const handleDelete = async (rowData) => {
-        if (!window.confirm(`Are you sure you want to delete ticket: ${rowData.ticketName}?`)) {
+        if (!window.confirm(`Are you sure you want to delete ticket: ${rowData.noTiket}?`)) {
             return;
         }
         try {
@@ -304,7 +304,7 @@ const Tickets = () => {
             setTicketData(prevData => 
                 prevData.filter(ticket => ticket.id !== rowData.id)
             );
-            alert(`Ticket "${rowData.ticketName}" deleted successfully`);
+            alert(`Ticket "${rowData.noTiket}" deleted successfully`);
             setError(null);
         } catch (err) {
             if (!handleAuthError(err)) {
