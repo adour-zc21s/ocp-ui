@@ -138,7 +138,7 @@ const Accounts = () => {
 
     return (
         <div className="m-2 md:m-10 mt-24 p-2 md:p-10 bg-white rounded-3xl relative">
-            <Header category="Accounts" title="All Accounts" />
+            <Header category="Accounts" title="All Account" />
             
             {error && (
                 <div className="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
