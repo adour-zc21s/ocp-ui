@@ -33,6 +33,9 @@ const Tickets = () => {
         departemen: '',
         priority: ''
     });
+    const [comments, setComments] = useState([]);
+    const [commentText, setCommentText] = useState('');
+    const [isCommentsLoading, setIsCommentsLoading] = useState(false);
     const { currentColor, currentMode } = useStateContext();
     const navigate = useNavigate();
     const getAuthHeaders = () => {
@@ -124,16 +127,44 @@ const Tickets = () => {
         departemen: ticket.departemen || '',
         priority: ticket.priority || ''
     });    
+    const fetchComments = async (ticketId) => {
+        try {
+            setIsCommentsLoading(true);
+            const headers = getAuthHeaders();
+            if (!headers) {
+                return;
+            }
+            const response = await axios.get(`${REST_API_URL}/${encodeURIComponent(ticketId)}/comments`, { headers });
+            let data = response.data;
+            if (data.data) data = data.data;
+            if (Array.isArray(data)) {
+                setComments(data);
+            } else if (data) {
+                setComments([data]);
+            } else {
+                setComments([]);
+            }
+        } catch (error) {
+            if (!handleAuthError(error)) {
+                console.error('Fetch comments error:', error);
+            }
+        } finally {
+            setIsCommentsLoading(false);
+        }
+    };
     const handleView = (rowData) => {
         setSelectedTicket(rowData);
         setEditFormData(mapTicketToFormData(rowData));
         setIsEditingTicket(false);
         setIsModalOpen(true);
+        fetchComments(rowData.id);
     };
     const handleCloseModal = () => {
         setIsModalOpen(false);
         setSelectedTicket(null);
         setIsEditingTicket(false);
+        setComments([]);
+        setCommentText('');
     };
     const handleOpenAddModal = () => {
         setFormData(createEmptyTicketForm());
@@ -311,6 +342,38 @@ const Tickets = () => {
             if (!handleAuthError(err)) {
                 console.error("Add ticket error:", err);
                 alert(err.response?.data?.message || 'Failed to add ticket');
+            }
+        }
+    };
+    const handleAddComment = async (e) => {
+        e.preventDefault();
+        if (!commentText.trim()) {
+            alert('Please enter a comment');
+            return;
+        }
+        if (!selectedTicket?.id) return;
+
+        try {
+            const headers = getAuthHeaders();
+            if (!headers) {
+                alert('Please log in before adding a comment.');
+                return;
+            }
+
+            const response = await axios.post(
+                `${REST_API_URL}/${encodeURIComponent(selectedTicket.id)}/comments`,
+                { comment: commentText.trim() },
+                { headers }
+            );
+
+            const newComment = response.data?.data || response.data || { comment: commentText.trim(), createdAt: new Date().toISOString() };
+            setComments(prevComments => [newComment, ...prevComments]);
+            setCommentText('');
+            alert('Comment added successfully');
+        } catch (err) {
+            if (!handleAuthError(err)) {
+                console.error('Add comment error:', err);
+                alert(err.response?.data?.message || 'Failed to add comment');
             }
         }
     };
@@ -560,6 +623,45 @@ const Tickets = () => {
                                     <div className="col-span-1 md:col-span-2">
                                         <p className="text-xs text-gray-400 uppercase tracking-wider">Description</p>
                                         <p className="font-medium mb-3">{selectedTicket.deskripsi || '-'}</p>
+                                    </div>
+
+                                    <div className="col-span-1 md:col-span-2">
+                                        <div className="mb-4">
+                                            <div className="flex items-center justify-between mb-2">
+                                                <p className="text-xs text-gray-400 uppercase tracking-wider">Comments</p>
+                                                {isCommentsLoading && <span className="text-xs text-gray-500">Loading...</span>}
+                                            </div>
+                                            {comments.length === 0 ? (
+                                                <p className="text-sm text-gray-500">No comments yet.</p>
+                                            ) : (
+                                                <ul className="space-y-3">
+                                                    {comments.map((comment, idx) => (
+                                                        <li key={comment.id || idx} className="p-3 bg-gray-50 rounded-xl border border-gray-200">
+                                                            <p className="text-sm text-gray-800">{comment.comment || comment.text || comment.body || '-'}</p>
+                                                            <p className="text-xs text-gray-500 mt-2">
+                                                                {comment.createdAt ? new Date(comment.createdAt).toLocaleString() : 'Unknown time'}
+                                                            </p>
+                                                        </li>
+                                                    ))}
+                                                </ul>
+                                            )}
+                                        </div>
+                                        <form onSubmit={handleAddComment} className="space-y-3">
+                                            <label className="block text-xs text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-1">Add Comment</label>
+                                            <textarea
+                                                value={commentText}
+                                                onChange={(e) => setCommentText(e.target.value)}
+                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                rows={4}
+                                                placeholder="Write a comment..."
+                                            />
+                                            <button
+                                                type="submit"
+                                                className="px-4 py-2 rounded-xl text-sm text-white bg-blue-500 hover:bg-blue-600 transition duration-200"
+                                            >
+                                                Add Comment
+                                            </button>
+                                        </form>
                                     </div>
                                 </div>
 
