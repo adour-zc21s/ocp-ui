@@ -14,6 +14,7 @@ const REST_API_URL = `${API_BASE_URL}/api/v1/tickets`;
 const Tickets = () => {
     const [ticketData, setTicketData] = useState([]);
     const [departments, setDepartments] = useState([]);
+    const [branches, setBranches] = useState([]);
     const [searchId, setSearchId] = useState('');
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -112,6 +113,32 @@ const Tickets = () => {
             }
         };
         fetchDepartments();
+    }, []);
+
+    // Fetch branches
+    useEffect(() => {
+        const fetchBranches = async () => {
+            try {
+                const headers = getAuthHeaders();
+                if (!headers) {
+                    return;
+                }
+
+                const response = await axios.get(`${REST_API_URL}/branches`, { headers });
+
+                let data = response.data;
+                if (data.data) data = data.data;
+                
+                if (Array.isArray(data)) {
+                    setBranches(data);
+                }
+            } catch (error) {
+                if (!handleAuthError(error)) {
+                    console.error('Failed to load branches:', error);
+                }
+            }
+        };
+        fetchBranches();
     }, []);
 
     // Action Handlers
@@ -422,6 +449,7 @@ const Tickets = () => {
             template: TicketTemplate
         },
         { field: 'dibuatOleh', headerText: 'Created By', width: '100', textAlign: 'Center'},
+        { field: 'departemen', headerText: 'Department', width: '100', textAlign: 'Center'},
         { 
             field: 'status', 
             headerText: 'Status', 
@@ -737,7 +765,25 @@ const Tickets = () => {
                                             ))}
                                         </select>
                                     </div>
-
+                                    <div>
+                                        <label className="block text-xs text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-1">
+                                            Branch
+                                        </label>
+                                        <select
+                                            name="branch"
+                                            value={formData.branch}
+                                            onChange={handleFormChange}
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            required
+                                        >
+                                            <option value="">Select a branch</option>
+                                            {branches.map((branch) => (
+                                                <option key={branch.id || branch} value={branch.name || branch}>
+                                                    {branch.name || branch}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </div>
                                 </div>
                             </div>
 
