@@ -14,6 +14,7 @@ const REST_API_URL = `${API_BASE_URL}/api/v1/tickets`;
 const Tickets = () => {
     const [ticketData, setTicketData] = useState([]);
     const [departments, setDepartments] = useState([]);
+    const [accounts, setAccounts] = useState([]);
     const [branches, setBranches] = useState([]);
     const [searchId, setSearchId] = useState('');
     const [loading, setLoading] = useState(true);
@@ -27,6 +28,8 @@ const Tickets = () => {
     const [formData, setFormData] = useState({
         judul: '',
         departemen: '',
+        emailNotification: '',
+        branch: '',
         priority: ''
     });
 
@@ -141,17 +144,43 @@ const Tickets = () => {
         fetchBranches();
     }, []);
 
+    // fetch accounts
+    useEffect(() => {
+        const fetchAccounts = async () => {
+            try {
+                const headers = getAuthHeaders();
+                if (!headers) {
+                    return;
+                }
+                const response = await axios.get(`${REST_API_URL}/accounts`, { headers });
+                let data = response.data;
+                if (data.data) data = data.data;
+                if (Array.isArray(data)) {
+                    setAccounts(data);
+                }
+            } catch (error) {
+                if (!handleAuthError(error)) {
+                    console.error('Failed to load accounts:', error);
+                }
+            }
+        };
+        fetchAccounts();
+    }, []);
+
     // Action Handlers
     const createEmptyTicketForm = () => ({
         noTiket: '',
         judul: '',
         departemen: '',
+        emailNotification: '',
+        branch: '',
         priority: ''
     });
     const mapTicketToFormData = (ticket = {}) => ({
         noTiket: ticket.noTiket || '',
         judul: ticket.judul || '',
         departemen: ticket.departemen || '',
+        emailNotification: ticket.account ||'',
         priority: ticket.priority || ''
     });    
     const fetchComments = async (ticketId) => {
@@ -356,8 +385,8 @@ const Tickets = () => {
                 return;
             }
             // Validate required fields
-            if (!formData.judul || !formData.departemen) {
-                alert('Please fill in all required fields (Ticket Judul, Departemen)');
+            if (!formData.judul || !formData.departemen || !formData.emailNotification) {
+                alert('Please fill in all required fields (Ticket Judul, Departemen, Account)');
                 return;
             }
             const response = await axios.post(REST_API_URL, formData, { headers });
@@ -745,6 +774,25 @@ const Tickets = () => {
                                             required
                                             autoComplete="off"
                                         />
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-1">
+                                            Account Manager
+                                        </label>
+                                        <select
+                                            name="emailNotification"
+                                            value={formData.emailNotification}
+                                            onChange={handleFormChange}
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            required
+                                        >
+                                            <option value="">Select an account</option>
+                                            {accounts.map((account) => (
+                                                <option key={account.id || account} value={account.email || account}>
+                                                    {account.name || account}
+                                                </option>
+                                            ))}
+                                        </select>
                                     </div>
                                     <div>
                                         <label className="block text-xs text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-1">
