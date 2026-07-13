@@ -139,7 +139,7 @@ const Login = () => {
           <div className="mb-4 p-4 bg-red-50 border border-red-300 text-red-800 rounded-lg text-sm">
             <div className="font-semibold mb-1">Login Error</div>
             <p>{error}</p>
-            <p className="mt-2 text-xs text-red-600">Tip: Check the browser console (F12) for more details</p>
+            <p className="mt-2 text-xs text-red-600">Error code 521 backend is down</p>
           </div>
         )}
 
