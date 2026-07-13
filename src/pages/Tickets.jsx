@@ -376,6 +376,37 @@ const Tickets = () => {
             setLoading(false);
         }
     };
+    const handleCloseTicket = async () => {
+        if (!selectedTicket?.id) return;
+        if (!window.confirm(`Are you sure you want to close ticket: ${selectedTicket.noTiket}?`)) return;
+
+        try {
+            const headers = getAuthHeaders();
+            if (!headers) {
+                alert('Please log in before modifying this ticket.');
+                return;
+            }
+
+            // Call the new backend close route
+            const response = await axios.put(`${REST_API_URL}/${encodeURIComponent(selectedTicket.id)}/close`, {}, { headers });
+
+            // The backend returns the updated ticket data object
+            const updatedTicket = response.data?.data || response.data;
+
+            // 1. Update the state list array so the Syncfusion grid refreshes instantly
+            setTicketData(prevData => prevData.map(ticket => ticket.id === selectedTicket.id ? updatedTicket : ticket));
+
+            // 2. Update current selected ticket modal view state properties
+            setSelectedTicket(updatedTicket);
+
+            alert('Ticket closed successfully and notification email sent.');
+        } catch (err) {
+            if (!handleAuthError(err)) {
+                console.error('Close ticket error:', err);
+                alert(err.response?.data?.message || 'Failed to close ticket');
+            }
+        }
+    };
     const handleAddTicket = async (e) => {
         e.preventDefault();
         try {
@@ -620,6 +651,18 @@ const Tickets = () => {
                                 Ticket Details
                             </h3>
                             <div className="flex items-center gap-2">
+                                {/* Display "Close Ticket" option only if the current status is Open */}
+                                {!isEditingTicket && selectedTicket.status === 'Open' && (
+                                    <button
+                                        type="button"
+                                        title="Close Ticket"
+                                        onClick={handleCloseTicket}
+                                        className="px-3 py-2 rounded-lg text-sm bg-red-100 text-red-600 hover:bg-red-200 transition duration-200 font-semibold"
+                                    >
+                                        Close Ticket
+                                    </button>
+                                )}
+                            
                                 {!isEditingTicket && (
                                     <button
                                         type="button"
@@ -630,12 +673,6 @@ const Tickets = () => {
                                         Edit
                                     </button>
                                 )}
-                                {/* <button 
-                                    onClick={handleCloseModal}
-                                    className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 text-2xl font-semibold"
-                                >
-                                    &times;
-                                </button> */}
                             </div>
                         </div>
 
