@@ -296,7 +296,7 @@ const Items = () => {
     return (
         <div className="m-2 md:m-10 mt-24 p-2 md:p-10 bg-white rounded-3xl relative">
             <div className="flex justify-between items-center mb-6">
-                <Header category="Items" title="All Items" />
+                <Header category="Items" title="All Item" />
                 <div className="flex items-center space-x-3">
                     <input
                         type="text"
