@@ -4,6 +4,7 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import { ContextProvider } from './contexts/ContextProvider';
+import ErrorBoundary from './components/ErrorBoundary';
 
 // Handle unhandled promise rejections (e.g., from browser extensions)
 window.addEventListener('unhandledrejection', (event) => {
@@ -18,7 +19,9 @@ window.addEventListener('unhandledrejection', (event) => {
 ReactDOM.render(
   <React.StrictMode>
     <ContextProvider>
-      <App />
+      <ErrorBoundary>
+        <App />
+      </ErrorBoundary>
     </ContextProvider>
   </React.StrictMode>,
   document.getElementById('root'),

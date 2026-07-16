@@ -7,7 +7,7 @@ import { IoMdContacts } from 'react-icons/io';
 import { RiStockLine } from 'react-icons/ri';
 import { MdOutlineSupervisorAccount } from 'react-icons/md';
 
-import { PiTicketDuotone, PiListNumbersDuotone, PiUsersThreeDuotone, PiChartLineUpDuotone, PiDevicesDuotone, PiGitBranchDuotone, PiIdentificationCardDuotone } from 'react-icons/pi';
+import { PiTicketDuotone, PiListNumbersDuotone, PiUsersThreeDuotone, PiChartLineUpDuotone, PiDevicesDuotone, PiGitBranchDuotone, PiIdentificationCardDuotone, PiEnvelopeSimpleDuotone  } from 'react-icons/pi';
 
 import { HiOutlineRefresh } from 'react-icons/hi';
 import { TiTick } from 'react-icons/ti';
@@ -501,6 +501,10 @@ export const links = [
       {
         name: 'accounts',
         icon: <PiIdentificationCardDuotone />,
+      },
+      {
+        name: 'emails',
+        icon: <PiEnvelopeSimpleDuotone  />,
       },
     ],
   },
