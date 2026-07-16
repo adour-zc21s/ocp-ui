@@ -3,10 +3,11 @@ import axios from 'axios';
 import { Stacked, Pie, Button, LineChart, SparkLine } from '../components';
 import { GridComponent, ColumnsDirective, ColumnDirective, Resize, Sort, ContextMenu, Filter, Page, ExcelExport, PdfExport, Edit, Inject } from '@syncfusion/ej2-react-grids';
 import { contextMenuItems } from '../data/dummy';
-import { PiMagnifyingGlassPlusDuotone, PiPenDuotone, PiTrashDuotone, PiEraserDuotone} from "react-icons/pi";
+import { PiMagnifyingGlassPlusDuotone, PiPenDuotone, PiTrashDuotone, PiEraserDuotone, PiMicrosoftExcelLogoDuotone} from "react-icons/pi";
 import { Header } from '../components';
 import { useStateContext } from '../contexts/ContextProvider';
 import { useNavigate } from 'react-router-dom';
+import * as XLSX from 'xlsx';
 
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL; 
 const REST_API_URL = `${API_BASE_URL}/api/v1/dev`;
@@ -424,6 +425,27 @@ const Devices = () => {
             ) 
         }
     ];
+    // Sample data to export xlsx
+    const handleExportXlsx = () => {
+      // 1. Map and transform the data to include ONLY your specific fields and custom headers
+      const dataToExport = deviceData.map(item => ({
+        'ID': item.id,
+        'Device/Host Name': item.deviceName,
+        'User': item.user
+      }));
+
+      // 2. Create a new workbook
+      const workbook = XLSX.utils.book_new();
+
+      // 3. Convert the transformed JSON data into a worksheet
+      const worksheet = XLSX.utils.json_to_sheet(dataToExport);
+
+      // 4. Append the worksheet to the workbook
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Devices");
+
+      // 5. Download the file
+      XLSX.writeFile(workbook, "Device_List.xlsx");
+    };
 
     const editing = { allowDeleting: false, allowEditing: false };
 
@@ -466,6 +488,14 @@ const Devices = () => {
                     >
                         New Device
                         {/* {<PiPenDuotone />} */}
+                    </button>
+                    <button 
+                      onClick={handleExportXlsx}
+                      title="Export to Excel"
+                      type="button"
+                      className="text-blue-700 px-3 py-2 rounded-xl text-xs bg-blue-200 hover:bg-blue-300 transition duration-200"
+                    >
+                      <PiMicrosoftExcelLogoDuotone />
                     </button>
                 </div>
             </div>
