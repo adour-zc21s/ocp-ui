@@ -9,7 +9,7 @@ import { useStateContext } from '../contexts/ContextProvider';
 import { useNavigate } from 'react-router-dom';
 
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL; 
-const REST_API_URL = `${API_BASE_URL}/api/v1/email`;
+const REST_API_URL = `${API_BASE_URL}/api/v1/emails`;
 
 const Emails = () => {
     const [emailsData, setEmailsData] = useState([]);
@@ -28,13 +28,13 @@ const Emails = () => {
         id: '',
         prefectName: '',
         email: '',
-        passw: ''
+        passwd: ''
     });
     const [editFormData, setEditFormData] = useState({
         id: '',
         prefectName: '',
         email: '',
-        passw: ''
+        passwd: ''
     });
     const getAuthHeaders = () => {
         const token = localStorage.getItem('authToken');
@@ -90,7 +90,7 @@ const Emails = () => {
         id: '',
         prefectName: '',
         email: '',
-        passw: ''
+        passwd: ''
     });
     const mapEmailToFormData = (email = {}) => ({
         id: email.id || '',
@@ -176,12 +176,12 @@ const Emails = () => {
         }
 
         if (!searchName) {
-            alert('Please enter an email name to search');
+            alert('Please enter an email address to search');
             return;
         }
 
         const trimmedSearchName = searchName.trim();
-        const localMatch = emailsData.find((email) => String(email.name) === String(trimmedSearchName));
+        const localMatch = emailsData.find((email) => String(email.email) === String(trimmedSearchName));
         if (localMatch) {
             setEmailsData([localMatch]);
             setError(null);
@@ -199,7 +199,7 @@ const Emails = () => {
 
             let response;
             try {
-                response = await axios.get(`${REST_API_URL}/search?letter=${encodeURIComponent(trimmedSearchName)}`, { headers });
+                response = await axios.get(`${REST_API_URL}/search?email=${encodeURIComponent(trimmedSearchName)}`, { headers });
             } catch (firstErr) {
                 if (firstErr.response?.status === 404) {
                     response = await axios.get(`${REST_API_URL}/${encodeURIComponent(trimmedSearchName)}`, { headers });
@@ -263,7 +263,7 @@ const Emails = () => {
     // handleDelete function
     const handleDelete = async (rowData) => {
         // 1. Ask for confirmation before destroying data
-        if (!window.confirm(`Are you sure you want to delete email "${rowData.name}"?`)) {
+        if (!window.confirm(`Are you sure you want to delete email "${rowData.email}"?`)) {
             return;
         }
 
@@ -275,21 +275,13 @@ const Emails = () => {
                 setLoading(false);
                 return;
             }
-
-            // 2. Make the HTTP DELETE request to your backend api endpoint
-            // Assuming your backend routes follow standard REST conventions like: /api/v1/branches/:code or :id
-            // Swap `rowData.code` with `rowData.id` depending on what your primary backend key identifier is.
             await axios.delete(`${REST_API_URL}/${encodeURIComponent(rowData.id)}`, { headers });
-
-            // 3. Update local state to immediately filter out the deleted item from the table UI
             setEmailsData((prevEmails) => 
                 prevEmails.filter((email) => email.id !== rowData.id)
             );
-
-            alert(`Email "${rowData.name}" successfully deleted.`);
+            alert(`Email "${rowData.email}" successfully deleted.`);
             setError(null);
         } catch (err) {
-            // 4. Handle authentication expirations or standard API errors
             if (!handleAuthError(err)) {
                 console.error('Delete email error:', err);
                 alert(err.response?.data?.message || 'Failed to delete email. Please try again.');
@@ -299,10 +291,10 @@ const Emails = () => {
         }
     };
     const emailsGrid = [
-        { field: 'id', headerText: 'ID', width: '150', textAlign: 'Left' },
-        { field: 'prefectName', headerText: 'Prefect Name', width: '150', textAlign: 'Left' },
+        { field: 'id', headerText: 'ID', width: '50', textAlign: 'Left' },
+        { field: 'perfectName', headerText: 'Prefect Name', width: '150', textAlign: 'Left' },
         { field: 'email', headerText: 'Email Address', width: '150', textAlign: 'Left' },
-        { field: 'passw', headerText: 'Password', width: '150', textAlign: 'Center' },
+        { field: 'passwd', headerText: 'Password', width: '150', textAlign: 'Center' },
 
         { 
             field: 'actions', 
@@ -347,7 +339,7 @@ const Emails = () => {
                     >
                         <input
                             type="text"
-                            placeholder="Search by name"
+                            placeholder="Search by email"
                             value={searchName}
                             onChange={handleSearchInputChange}
                             className="flex-1 sm:flex-initial px-2 py-2 border border-gray-300 rounded-xl bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-300 text-sm"
@@ -473,14 +465,16 @@ const Emails = () => {
                         ) : (
                             <>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-700 dark:text-gray-300">
-                                    <h3 className="text-sm font-semibold col-span-2 mb-2 text-gray-400 dark:text-gray-200">Identity & Classification</h3>
+                                    <h3 className="text-sm font-semibold col-span-2 mb-2 text-gray-400 dark:text-gray-200">Email Information</h3>
                                     <div>
-                                        <p className="text-xs text-gray-400 uppercase tracking-wider">Device ID</p>
+                                        <p className="text-xs text-gray-400 uppercase tracking-wider">ID</p>
                                         <p className="font-medium mb-3">{selectedEmail.id || '-'}</p>
-                                        <p className="text-xs text-gray-400 uppercase tracking-wider">Prefect Name</p>
-                                        <p className="font-medium mb-3">{selectedEmail.prefectName || '-'}</p>
+                                        <p className="text-xs text-gray-400 uppercase tracking-wider">Email Address</p>
+                                        <p className="font-medium mb-3">{selectedEmail.email || '-'}</p>
                                     </div>
                                     <div>
+                                        <p className="text-xs text-gray-400 uppercase tracking-wider">Perfect Name</p>
+                                        <p className="font-medium mb-3">{selectedEmail.perfectName || '-'}</p>
                                         <p className="text-xs text-gray-400 uppercase tracking-wider">Password</p>
                                         <p className="font-medium mb-3">{selectedEmail.passwd || '-'}</p>
                                     </div>
