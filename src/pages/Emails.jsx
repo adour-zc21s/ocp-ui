@@ -26,13 +26,13 @@ const Emails = () => {
     const [isEditingEmail, setIsEditingEmail] = useState(false);
     const [formData, setFormData] = useState({
         id: '',
-        prefectName: '',
+        perfectName: '',
         email: '',
         passwd: ''
     });
     const [editFormData, setEditFormData] = useState({
         id: '',
-        prefectName: '',
+        perfectName: '',
         email: '',
         passwd: ''
     });
@@ -88,15 +88,15 @@ const Emails = () => {
     // Action Handlers
     const createEmptyEmailForm = () => ({
         id: '',
-        prefectName: '',
+        perfectName: '',
         email: '',
         passwd: ''
     });
     const mapEmailToFormData = (email = {}) => ({
         id: email.id || '',
-        prefectName: email.prefectName || '',
+        perfectName: email.perfectName || '',
         email: email.email || '',
-        passw: email.passw || ''
+        passwd: email.passwd || ''
     });
     const handleView = (rowData) => {
         setSelectedEmail(rowData);
@@ -146,8 +146,8 @@ const Emails = () => {
                 return;
             }
 
-            if (!editFormData.prefectName || !editFormData.email || !editFormData.passw) {
-                alert('Please fill in all required fields (Prefect Name, Email, Password)');
+            if (!editFormData.perfectName || !editFormData.email || !editFormData.passwd) {
+                alert('Please fill in all required fields (Perfect Name, Email, Password)');
                 return;
             }
 
@@ -258,6 +258,34 @@ const Emails = () => {
                 setError('Failed to reload emails');
             }
             setLoading(false);
+        }
+    };
+    const handleAddEmail = async (e) => {
+        e.preventDefault();
+        try {
+            const headers = getAuthHeaders();
+            if (!headers) {
+                alert('Please log in before adding an email.');
+                return;
+            }
+
+            // Validate required fields
+            if (!formData.email || !formData.passwd) {
+                alert('Please fill in all required fields (Email, Password)');
+                return;
+            }
+
+            const response = await axios.post(REST_API_URL, formData, { headers });
+
+            // Add new email to the list
+            setEmailsData(prevData => [...prevData, response.data]);
+            alert('Email added successfully');
+            handleCloseAddModal();
+        } catch (err) {
+            if (!handleAuthError(err)) {
+                console.error("Add email error:", err);
+                alert(err.response?.data?.message || 'Failed to add email');
+            }
         }
     };
     // handleDelete function
@@ -446,13 +474,17 @@ const Emails = () => {
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div>
                                         <label className="block text-xs text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-1">Email Address <span className="text-red-500">*</span></label>
-                                        <input type="email" name="emailAddress" value={editFormData.emailAddress} onChange={handleEditFormChange} className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500" required />
+                                        <input type="email" name="emailAddress" value={editFormData.email} onChange={handleEditFormChange} className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500" required />
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-1">Password <span className="text-red-500">*</span></label>
+                                        <input type="text" name="passwd" value={editFormData.passwd} onChange={handleEditFormChange} className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500" required />
                                     </div>
                                 </div>
                                 <div className="flex justify-end gap-3 mt-6 border-t pt-3">
                                     <button 
                                         type="button" 
-                                        className="px-4 py-2 rounded-xl text-sm bg-red-300 text-gray-800 hover:bg-red-400 transition duration-200" onClick={() => setIsEditingDevice(false)}>
+                                        className="px-4 py-2 rounded-xl text-sm bg-red-300 text-gray-800 hover:bg-red-400 transition duration-200" onClick={() => setIsEditingEmail(false)}>
                                         Cancel
                                     </button>
                                     <button 
@@ -505,7 +537,7 @@ const Emails = () => {
                         {/* Modal Header */}
                         <div className="flex justify-between items-center border-b pb-3 mb-4">
                             <h3 className="text-xl font-semibold text-gray-800 dark:text-gray-200">
-                                Add New Device
+                                Add New Email
                             </h3>
                             <button 
                                 onClick={handleCloseAddModal}
@@ -516,19 +548,19 @@ const Emails = () => {
                         </div>
 
                         {/* Modal Form */}
-                        <form onSubmit={handleAddDevice}>
+                        <form onSubmit={handleAddEmail}>
                             {/* Identity & Classification */}
                             <div className="mb-4">
-                                <h4 className="text-sm font-semibold mb-3 text-gray-400 dark:text-gray-200">Identity & Classification</h4>
+                                <h4 className="text-sm font-semibold mb-3 text-gray-400 dark:text-gray-200">Email Information</h4>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div>
                                         <label className="block text-xs text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-1">
-                                            Device/Host Name <span className="text-red-500">*</span>
+                                            Person Name <span className="text-red-500">*</span>
                                         </label>
                                         <input
                                             type="text"
-                                            name="deviceName"
-                                            value={formData.deviceName}
+                                            name="perfectName"
+                                            value={formData.perfectName}
                                             onChange={handleFormChange}
                                             className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                             required
@@ -537,12 +569,12 @@ const Emails = () => {
                                     </div>
                                     <div>
                                         <label className="block text-xs text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-1">
-                                            Manufacture <span className="text-red-500">*</span>
+                                            Email Address <span className="text-red-500">*</span>
                                         </label>
                                         <input
                                             type="text"
-                                            name="manufacture"
-                                            value={formData.manufacture}
+                                            name="email"
+                                            value={formData.email}
                                             onChange={handleFormChange}
                                             className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                             required
@@ -551,112 +583,16 @@ const Emails = () => {
                                     </div>
                                     <div>
                                         <label className="block text-xs text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-1">
-                                            Serial Number
+                                            Password <span className="text-red-500">*</span>
                                         </label>
                                         <input
                                             type="text"
-                                            name="serialNumber"
-                                            value={formData.serialNumber}
+                                            name="passwd"
+                                            value={formData.passwd}
                                             onChange={handleFormChange}
                                             className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            required
                                             autoComplete="off"
-                                        />
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Network and Connectivity */}
-                            <div className="mb-4">
-                                <h4 className="text-sm font-semibold mb-3 text-gray-400 dark:text-gray-200">Network and Connectivity</h4>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div>
-                                        <label className="block text-xs text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-1">
-                                            IP Address
-                                        </label>
-                                        <input
-                                            type="text"
-                                            name="ipAddress"
-                                            value={formData.ipAddress}
-                                            onChange={handleFormChange}
-                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                            autoComplete="off"
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="block text-xs text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-1">
-                                            MAC Address
-                                        </label>
-                                        <input
-                                            type="text"
-                                            name="macAddress"
-                                            value={formData.macAddress}
-                                            onChange={handleFormChange}
-                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                            autoComplete="off"
-                                        />
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Location and Assignment */}
-                            <div className="mb-4">
-                                <h4 className="text-sm font-semibold mb-3 text-gray-400 dark:text-gray-200">Location and Assignment</h4>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div>
-                                        <label className="block text-xs text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-1">
-                                            User
-                                        </label>
-                                        <input
-                                            type="text"
-                                            name="user"
-                                            value={formData.user}
-                                            onChange={handleFormChange}
-                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                            autoComplete="off"
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="block text-xs text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-1">
-                                            Location
-                                        </label>
-                                        <input
-                                            type="text"
-                                            name="location"
-                                            value={formData.location}
-                                            onChange={handleFormChange}
-                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                            autoComplete="off"
-                                        />
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Lifecycle and Asset Management */}
-                            <div className="mb-4">
-                                <h4 className="text-sm font-semibold mb-3 text-gray-400 dark:text-gray-200">Lifecycle and Asset Management</h4>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div>
-                                        <label className="block text-xs text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-1">
-                                            Purchase Date
-                                        </label>
-                                        <input
-                                            type="date"
-                                            name="purchaseDate"
-                                            value={formData.purchaseDate}
-                                            onChange={handleFormChange}
-                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="block text-xs text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-1">
-                                            Warranty Expiry
-                                        </label>
-                                        <input
-                                            type="date"
-                                            name="warrantyExpired"
-                                            value={formData.warrantyExpired}
-                                            onChange={handleFormChange}
-                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                         />
                                     </div>
                                 </div>
@@ -676,7 +612,7 @@ const Emails = () => {
                                     style={{ backgroundColor: currentColor }}
                                     className="px-5 py-2 rounded-xl text-sm text-white hover:opacity-90 transition duration-200"
                                 >
-                                    Add Device
+                                    Add Email
                                 </button>
                             </div>
                         </form>
