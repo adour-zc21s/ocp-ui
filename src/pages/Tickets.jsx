@@ -495,8 +495,8 @@ const Tickets = () => {
     const TicketTemplate = (props) => {
       return (
         <div>
-          <div style={{ fontWeight: 'bold', fontSize: '14px' }}>{props.noTiket}</div>
-          <div style={{ color: '#666', fontSize: '12px' }}>{props.judul}</div>
+          <div style={{ color: '#444', fontWeight: 'bold', fontSize: '10px' }}>{props.noTiket}</div>
+          <div style={{ fontSize: '12px' }}>{props.judul}</div>
         </div>
       );
     };
