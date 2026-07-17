@@ -501,7 +501,7 @@ const Tickets = () => {
       );
     };
     const ticketsGrid = [
-        { field: 'id', headerText: 'ID', width: '30', textAlign: 'Center'},
+        { field: 'id', headerText: 'ID', width: '55', textAlign: 'Center'},
         { field: 'ticketDetails', 
             headerText: 'Ticket No / Subject', 
             width: '250', 
