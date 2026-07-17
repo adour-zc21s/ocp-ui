@@ -408,6 +408,7 @@ const Devices = () => {
                 <div className="flex justify-center space-x-2">
                     <button 
                         type="button"
+                        title="Details"
                         className="text-blue-500 text-xl py-1 px-2 transition duration-200 font-bold"
                         onClick={() => handleView(props)}
                     >

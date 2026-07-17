@@ -258,18 +258,19 @@ const Branches = () => {
                 <div className="flex justify-center space-x-2">
                     <button 
                         type="button"
-                        style={{ backgroundColor: currentColor }}
-                        className="text-white text-xs py-1 px-3 rounded-xl hover:opacity-80 transition duration-200"
+                        title="Details"
+                        className="text-blue-500 text-xl py-1 px-2 transition duration-200 font-bold"
                         onClick={() => handleView(props)}
                     >
-                        View
+                        {<PiMagnifyingGlassPlusDuotone />}
                     </button>
                     <button 
                         type="button"
-                        className="bg-red-600 text-white text-xs py-1 px-3 rounded-xl hover:bg-red-700 transition duration-200"
+                        title="Delete Branch"
+                        className="text-red-500 text-xl py-1 px-3 transition duration-200 font-semibold"
                         onClick={() => handleDelete(props)}
                     >
-                        Delete
+                        <PiTrashDuotone />
                     </button>
                 </div>
             ) 
