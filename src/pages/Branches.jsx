@@ -6,6 +6,7 @@ import { contextMenuItems } from '../data/dummy';
 import { Header } from '../components';
 import { useStateContext } from '../contexts/ContextProvider';
 import { useNavigate } from 'react-router-dom';
+import { PiMagnifyingGlassPlusDuotone, PiPenDuotone, PiTrashDuotone, PiEraserDuotone, PiMicrosoftExcelLogoDuotone} from "react-icons/pi";
 
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL; 
 const REST_API_URL = `${API_BASE_URL}/api/v1/branches`;
@@ -279,39 +280,38 @@ const Branches = () => {
     <div className="m-2 md:m-10 mt-24 p-2 md:p-10 bg-white rounded-3xl relative">
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
             <Header category="Branches" title="All Branche" />
-            
             {/* CHANGED: Wrapped search input and actions in a form element */}
-            <form onSubmit={handleSearchByName} className="flex flex-wrap items-center gap-2">
-                <input
-                    type="text"
-                    placeholder="Search by name"
-                    value={searchName}
-                    onChange={handleSearchInputChange}
-                    className="flex-1 sm:flex-initial px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-                />
-                <button
-                    type="submit"
-                    className="px-3 py-2 rounded-lg text-sm text-white"
-                    style={{ backgroundColor: currentColor }}
+            <div className="flex flex-wrap items-center gap-2">
+                <form 
+                    onSubmit={(e) => {
+                        e.preventDefault();
+                        handleSearchByName();
+                    }}
                 >
-                    Search
-                </button>
-                <button
-                    type="button"
-                    onClick={handleClearSearch}
-                    className="px-3 py-2 rounded-lg text-sm text-white bg-gray-500 hover:bg-gray-600 transition duration-200"
-                >
-                    Clear
-                </button>
-                <button
-                    type="button"
-                    style={{ backgroundColor: currentColor }}
-                    className="w-full sm:w-auto text-white px-4 py-2 rounded-xl hover:opacity-80 transition duration-200 font-semibold text-sm text-center"
-                    onClick={handleOpenAddModal}
-                >
-                    + Add Device
-                </button>
-            </form>
+                    <input
+                        type="text"
+                        placeholder="Search branch name"
+                        value={searchName}
+                        onChange={handleSearchInputChange}
+                        className="flex-1 sm:flex-initial px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                    />
+                </form>
+                    <button
+                        type="button"
+                        onClick={handleClearSearch}
+                        className="px-2 py-2 text-xl text-red-500 font-bold text-center rounded-xl bg-red-100 hover:bg-red-200 transition duration-200"
+                    >
+                        <PiEraserDuotone />
+                    </button>
+                    <button
+                        title="Add Branch"
+                        type="button"
+                        className="text-green-700 px-3 py-2 rounded-xl text-xs bg-green-200 hover:bg-green-300 transition duration-200"
+                        onClick={handleOpenAddModal}
+                    >
+                        + Add Branch
+                    </button>
+            </div>
         </div>
 
             {error && (

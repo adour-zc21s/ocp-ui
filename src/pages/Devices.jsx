@@ -427,23 +427,23 @@ const Devices = () => {
     ];
     // Sample data to export xlsx
     const handleExportXlsx = () => {
-      // 1. Map and transform the data to include ONLY your specific fields and custom headers
+      // Map and transform the data to include ONLY your specific fields and custom headers
       const dataToExport = deviceData.map(item => ({
         'ID': item.id,
         'Device/Host Name': item.deviceName,
         'User': item.user
       }));
 
-      // 2. Create a new workbook
+      // Create a new workbook
       const workbook = XLSX.utils.book_new();
 
-      // 3. Convert the transformed JSON data into a worksheet
+      // Convert the transformed JSON data into a worksheet
       const worksheet = XLSX.utils.json_to_sheet(dataToExport);
 
-      // 4. Append the worksheet to the workbook
+      // Append the worksheet to the workbook
       XLSX.utils.book_append_sheet(workbook, worksheet, "Devices");
 
-      // 5. Download the file
+      // Download the file
       XLSX.writeFile(workbook, "Device_List.xlsx");
     };
 
@@ -453,7 +453,6 @@ const Devices = () => {
         <div className="m-2 md:m-10 mt-24 p-2 md:p-10 bg-white rounded-xl relative">
             <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
                 <Header category="Devices" title="All Device" />
-
                 {/* flex-wrap ensures components wrap line-by-line if they run out of space */}
                 <div className="flex flex-wrap items-center gap-2">
                     <form
@@ -465,7 +464,7 @@ const Devices = () => {
                     >
                         <input
                             type="text"
-                            placeholder="Search by name"
+                            placeholder="Search device name"
                             value={searchId}
                             onChange={handleSearchInputChange}
                             className="flex-1 sm:flex-initial px-2 py-2 border border-gray-300 rounded-xl bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-300 text-sm"
@@ -486,7 +485,7 @@ const Devices = () => {
                         className="text-green-700 px-3 py-2 rounded-xl text-xs bg-green-200 hover:bg-green-300 transition duration-200"
                         onClick={handleOpenAddModal}
                     >
-                        New Device
+                        New Branch
                         {/* {<PiPenDuotone />} */}
                     </button>
                     <button 
