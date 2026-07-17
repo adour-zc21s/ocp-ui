@@ -493,7 +493,7 @@ const Devices = () => {
                       onClick={handleExportXlsx}
                       title="Export to Excel"
                       type="button"
-                      className="text-blue-700 px-3 py-2 rounded-xl text-xs bg-blue-200 hover:bg-blue-300 transition duration-200"
+                      className="text-green-700 px-3 py-2 rounded-xl text-xs bg-green-200 hover:bg-green-300 transition duration-200"
                     >
                       <PiMicrosoftExcelLogoDuotone />
                     </button>
