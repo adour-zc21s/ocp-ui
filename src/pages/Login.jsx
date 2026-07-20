@@ -1,11 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { FiMail, FiLock, FiEye, FiEyeOff } from 'react-icons/fi';
 import { useStateContext } from '../contexts/ContextProvider';
 
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
-
 const REST_API_URL = `${API_BASE_URL}/api/v1/auth/authenticate`;
 
 const loginAxios = axios.create({
@@ -35,6 +34,24 @@ const Login = () => {
   const navigate = useNavigate();
   const { currentColor } = useStateContext();
 
+  // --- BANNER ROTATION STATE & ASSETS ---
+  const banners = [
+    '/banner/banner_ocp_login1.png',
+    '/banner/banner_ocp_login2.png', // Add your second banner file path here
+    '/banner/banner_ocp_login3.png'  // Add your third banner file path here
+  ];
+  const [currentBannerIndex, setCurrentBannerIndex] = useState(0);
+
+  // Automatically cycle through banners every 4 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentBannerIndex((prevIndex) => (prevIndex + 1) % banners.length);
+    }, 4000); // 4000ms = 4 seconds
+
+    return () => clearInterval(interval);
+  }, [banners.length]);
+  // --------------------------------------
+
   React.useEffect(() => {
     const authToken = localStorage.getItem('authToken');
     if (authToken) {
@@ -59,10 +76,7 @@ const Login = () => {
     setLoading(true);
 
     try {
-      const requestPayload = {
-        email,
-        password,
-      };
+      const requestPayload = { email, password };
 
       console.log('Sending login request to:', REST_API_URL);
       console.log('Payload:', requestPayload);
@@ -128,12 +142,14 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
-      <div className="w-full max-w-md bg-white rounded-lg shadow-xl p-8">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
+      
+      {/* Main Login Card */}
+      <div className="w-full max-w-md bg-white rounded-lg shadow-xl p-8 mb-6">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-extrabold text-gray-900">OCP Dash</h1>
           <p className="text-gray-600 mt-2">Welcome back</p>
-          <p className="text-gray-600 text-sm">String200!</p>
+          {/* <p className="text-gray-600 text-sm">String200!</p> */}
         </div>
 
         {error && (
@@ -215,6 +231,31 @@ const Login = () => {
           <p className="mb-2 text-xs font-semibold">Open Class Programming</p>
         </div>
       </div>
+
+      {/* --- ANIMATED ADS BANNER COMPONENT --- */}
+      <div className="w-full max-w-md bg-white border border-gray-200 rounded-lg p-3 text-center shadow-md relative overflow-hidden">
+        <span className="absolute top-0 left-0 bg-gray-200 text-gray-500 text-[10px] font-bold px-1.5 py-0.5 rounded-br uppercase tracking-wide z-20">
+          Advertisement
+        </span>
+        
+        {/* Relative positioning context with a defined height container for absolute cross-fading items */}
+        <div className="mt-4 relative h-[100px] w-full overflow-hidden rounded">
+          <a href="https://your-ad-link-here.com" target="_blank" rel="noopener noreferrer" className="block w-full h-full">
+            {banners.map((src, index) => (
+              <img 
+                key={src}
+                src={src} 
+                alt={`Sponsored Banner ${index + 1}`} 
+                className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ease-in-out ${
+                  index === currentBannerIndex ? 'opacity-100 z-10' : 'opacity-0 z-0'
+                }`}
+              />
+            ))}
+          </a>
+        </div>
+      </div>
+      {/* ---------------------------- */}
+
     </div>
   );
 };
