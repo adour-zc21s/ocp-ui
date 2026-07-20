@@ -33,6 +33,7 @@ const Devices = () => {
         macAddress: '',
         user: '',
         location: '',
+        description: '',
         purchaseDate: '',
         warrantyExpired: ''
     });
@@ -46,6 +47,7 @@ const Devices = () => {
         macAddress: '',
         user: '',
         location: '',
+        description: '',
         purchaseDate: '',
         warrantyExpired: ''
     });
@@ -141,6 +143,7 @@ const Devices = () => {
         macAddress: '',
         user: '',
         location: '',
+        description: '',
         purchaseDate: '',
         warrantyExpired: ''
     });
@@ -154,6 +157,7 @@ const Devices = () => {
         macAddress: device.macAddress || '',
         user: device.user || '',
         location: device.location || '',
+        description: device.description || '',
         purchaseDate: device.purchaseDate || '',
         warrantyExpired: device.warrantyExpired || ''
     });
@@ -398,7 +402,7 @@ const Devices = () => {
         { field: 'id', headerText: 'ID', width: '60', textAlign: 'Center'},
         { field: 'deviceName', headerText: 'Device/Host Name', width: '150', textAlign: 'Left'},
         { field: 'user', headerText: 'User', width: '100', textAlign: 'Center'},
-        { field: 'ipAddress', headerText: 'IP Address', width: '150', textAlign: 'Center'},
+        { field: 'branchName', headerText: 'Branch Name', width: '150', textAlign: 'Center'},
         { 
             field: 'actions', 
             headerText: 'Actions', 
@@ -616,12 +620,16 @@ const Devices = () => {
                                         <input type="text" name="location" value={editFormData.location} onChange={handleEditFormChange} className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500" />
                                     </div>
                                     <div>
-                                        <label className="block text-xs text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-1">Purchase Date</label>
-                                        <input type="date" name="purchaseDate" value={editFormData.purchaseDate} onChange={handleEditFormChange} className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500" />
-                                    </div>
-                                    <div>
-                                        <label className="block text-xs text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-1">Warranty Expiry</label>
-                                        <input type="date" name="warrantyExpired" value={editFormData.warrantyExpired} onChange={handleEditFormChange} className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                                        <label className="block text-xs text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-1">
+                                            Description
+                                        </label>
+                                        <textarea 
+                                            name="description" 
+                                            rows="3"
+                                            value={editFormData.description} 
+                                            onChange={handleEditFormChange} 
+                                            className="w-full px-5 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-x" 
+                                        />
                                     </div>
                                 </div>
                                 <div className="flex justify-end gap-3 mt-6 border-t pt-3">
@@ -680,15 +688,12 @@ const Devices = () => {
                                 </div>
 
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-700 dark:text-gray-300">
-                                    <h3 className="text-sm font-semibold col-span-2 mb-2 text-gray-400 dark:text-gray-200">Lifecycle and asset management</h3>
-                                    <div>
-                                        <p className="text-xs text-gray-400 uppercase tracking-wider">Purchase Date</p>
-                                        <p className="font-medium mb-3">{selectedDevice.purchaseDate || '-'}</p>
-                                    </div>
-                                    <div>
-                                        <p className="text-xs text-gray-400 uppercase tracking-wider">Warranty Expiry</p>
-                                        <p className="font-medium mb-3">{selectedDevice.warrantyExpired || '-'}</p>
-                                    </div>
+                                    <h3 className="text-sm font-semibold col-span-2 mb-2 text-gray-400 dark:text-gray-200">Description</h3>
+                                    <textarea 
+                                        rows="5"
+                                        value={selectedDevice.description || '-'}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-x" 
+                                    />
                                 </div>
 
                                 <div className="flex justify-end mt-6 border-t pt-3">
@@ -867,26 +872,14 @@ const Devices = () => {
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div>
                                         <label className="block text-xs text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-1">
-                                            Purchase Date
+                                            Description
                                         </label>
-                                        <input
-                                            type="date"
-                                            name="purchaseDate"
-                                            value={formData.purchaseDate}
-                                            onChange={handleFormChange}
-                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="block text-xs text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-1">
-                                            Warranty Expiry
-                                        </label>
-                                        <input
-                                            type="date"
-                                            name="warrantyExpired"
-                                            value={formData.warrantyExpired}
-                                            onChange={handleFormChange}
-                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        <textarea 
+                                            name="description" 
+                                            rows="3"
+                                            value={formData.description} 
+                                            onChange={handleFormChange} 
+                                            className="w-full px-5 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-x" 
                                         />
                                     </div>
                                 </div>
