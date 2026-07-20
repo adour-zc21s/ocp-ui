@@ -76,6 +76,7 @@ const Login = () => {
         id: response.data.id,
         email: response.data.email,
         roles: response.data.roles,
+        profile_image_url: response.data.profile_image_url,
       };
 
       if (!token) {

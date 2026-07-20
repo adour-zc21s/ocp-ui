@@ -5,16 +5,31 @@ import { MdOutlineCancel } from 'react-icons/md';
 import { Button } from '.';
 import { userProfileData } from '../data/dummy';
 import { useStateContext } from '../contexts/ContextProvider';
-import avatar from '../data/avatar.jpg';
 
 const UserProfile = () => {
   const { currentColor } = useStateContext();
   const navigate = useNavigate();
 
-  // Get user info from localStorage
+  const BACKEND_URL = (process.env.REACT_APP_API_BASE_URL || 'http://localhost:8081').replace(/\/$/, '');  
+
   const user = JSON.parse(localStorage.getItem('user') || '{}');
   const userEmail = user.email || 'user@example.com';
   const userName = user.email?.split('@')[0] || 'User';
+
+  let profileImage = 'https://via.placeholder.com/150';
+  
+  if (user.profileImageUrl || user.profile_image_url) {
+    const imgPath = user.profileImageUrl || user.profile_image_url;
+    
+    if (imgPath.startsWith('http')) {
+      profileImage = imgPath;
+    } else {
+      const cleanFileName = imgPath.replace(/^\//, '');
+      
+      // Changed 'profile-images' to 'profile-pictures' to match your WebConfig handler
+      profileImage = `${BACKEND_URL}/uploads/profile-pictures/${cleanFileName}`;
+    }
+  }
 
   const handleLogout = () => {
     // Clear authentication data
@@ -40,9 +55,13 @@ const UserProfile = () => {
       </div>
       <div className="flex gap-5 items-center mt-6 border-color border-b-1 pb-6">
         <img
-          className="rounded-full h-24 w-24"
-          src={avatar}
+          className="rounded-full h-24 w-24 object-cover"
+          src={profileImage}
           alt="user-profile"
+          onError={(e) => {
+            // Safe fallback if the URL breaks, throws a 404, or is blocked
+            e.target.src = 'https://via.placeholder.com/150';
+          }}
         />
         <div>
           <p className="font-semibold text-xl dark:text-gray-200">{userName}</p>

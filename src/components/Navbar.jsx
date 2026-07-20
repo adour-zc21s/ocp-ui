@@ -7,7 +7,6 @@ import { MdKeyboardArrowDown } from 'react-icons/md';
 
 import { PiListDuotone, PiShoppingCartDuotone, PiChatCenteredDotsDuotone, PiBellDuotone} from "react-icons/pi";
 
-import avatar from '../data/avatar.jpg';
 import { Cart, Chat, Notification, UserProfile } from '.';
 import { useStateContext } from '../contexts/ContextProvider';
 
@@ -35,6 +34,23 @@ const Navbar = () => {
   const user = JSON.parse(localStorage.getItem('user') || '{}');
   const userEmail = user.email || 'User';
   const userName = userEmail.split('@')[0] || 'User';
+  
+  const BACKEND_URL = (process.env.REACT_APP_API_BASE_URL || 'http://localhost:8081').replace(/\/$/, ''); 
+
+  let profileImage = 'https://via.placeholder.com/150';
+  
+  if (user.profileImageUrl || user.profile_image_url) {
+    const imgPath = user.profileImageUrl || user.profile_image_url;
+    
+    if (imgPath.startsWith('http')) {
+      profileImage = imgPath;
+    } else {
+      const cleanFileName = imgPath.replace(/^\//, '');
+      
+      // Changed 'profile-images' to 'profile-pictures' to match your WebConfig handler
+      profileImage = `${BACKEND_URL}/uploads/profile-pictures/${cleanFileName}`;
+    }
+  }
 
   useEffect(() => {
     const handleResize = () => setScreenSize(window.innerWidth);
@@ -70,8 +86,8 @@ const Navbar = () => {
             onClick={() => handleClick('userProfile')}
           >
             <img
-              className="rounded-full w-8 h-8"
-              src={avatar}
+              className="rounded-full w-8 h-8 object-cover"
+              src={profileImage}
               alt="user-profile"
             />
             <p>
