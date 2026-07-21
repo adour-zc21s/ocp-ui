@@ -42,6 +42,36 @@ const Tickets = () => {
     const [isCommentsLoading, setIsCommentsLoading] = useState(false);
     const { currentColor, currentMode } = useStateContext();
     const navigate = useNavigate();
+    const getStoredUser = () => {
+        try {
+            return JSON.parse(localStorage.getItem('user') || '{}');
+        } catch (error) {
+            return {};
+        }
+    };
+    const getUserRoles = () => {
+        const storedUser = getStoredUser();
+        const rawRoles = storedUser.roles || storedUser.role || [];
+        if (Array.isArray(rawRoles)) {
+            return rawRoles.map((role) => String(role).toUpperCase());
+        }
+        if (typeof rawRoles === 'string') {
+            return [rawRoles.toUpperCase()];
+        }
+        return [];
+    };
+    const hasRole = (...allowedRoles) => {
+        const roles = getUserRoles();
+        return roles.some((role) => allowedRoles.some((allowed) => role === allowed || role === `ROLE_${allowed}` || `ROLE_${role}` === `ROLE_${allowed}`));
+    };
+    const canManageTickets = () => hasRole('ADMIN');
+    const ensureAdminAccess = (action = 'perform this action') => {
+        if (!canManageTickets()) {
+            alert(`Only admins can ${action}.`);
+            return false;
+        }
+        return true;
+    };
     const getAuthHeaders = () => {
         const token = localStorage.getItem('authToken');
         if (!token) return null;
@@ -245,12 +275,14 @@ const Tickets = () => {
         }));
     };
     const handleEditTicket = () => {
+        if (!ensureAdminAccess('edit tickets')) return;
         setEditFormData(mapTicketToFormData(selectedTicket));
         setIsEditingTicket(true);
     };
     const handleSaveEditedTicket = async (e) => {
         e.preventDefault();
         if (!selectedTicket?.id) return;
+        if (!ensureAdminAccess('edit tickets')) return;
 
         try {
             const headers = getAuthHeaders();
@@ -378,6 +410,7 @@ const Tickets = () => {
     };
     const handleCloseTicket = async () => {
         if (!selectedTicket?.id) return;
+        if (!ensureAdminAccess('close tickets')) return;
         if (!window.confirm(`Are you sure you want to close ticket: ${selectedTicket.noTiket}?`)) return;
 
         try {
@@ -409,6 +442,7 @@ const Tickets = () => {
     };
     const handleAddTicket = async (e) => {
         e.preventDefault();
+        if (!ensureAdminAccess('create tickets')) return;
         try {
             const headers = getAuthHeaders();
             if (!headers) {
@@ -465,6 +499,7 @@ const Tickets = () => {
         }
     };
     const handleDelete = async (rowData) => {
+        if (!ensureAdminAccess('delete tickets')) return;
         if (!window.confirm(`Are you sure you want to delete ticket: ${rowData.noTiket}?`)) {
             return;
         }
@@ -508,7 +543,7 @@ const Tickets = () => {
             textAlign: 'Left',
             template: TicketTemplate
         },
-        { field: 'dibuatOleh', headerText: 'Created By', width: '100', textAlign: 'Center'},
+        { field: 'dibuatOleh', headerText: 'Created By', width: '90', textAlign: 'Center'},
         { field: 'departemen', headerText: 'Department', width: '100', textAlign: 'Center'},
         { 
             field: 'status', 
@@ -528,7 +563,14 @@ const Tickets = () => {
                 );
             }
         },
-        { field: 'createdAt', headerText: 'Created At', width: '100', textAlign: 'Center'},
+        {
+          field: 'createdAt',
+          headerText: 'Created At',
+          width: '100',
+          textAlign: 'Center',
+          type: 'dateTime',
+          format: 'd/M/yy h:mm a' // Result: 21/7/26 7:38 PM
+        },
         { 
             field: 'actions', 
             headerText: 'Actions', 
@@ -543,6 +585,7 @@ const Tickets = () => {
                     >
                         <PiMagnifyingGlassPlusDuotone />
                     </button>
+                {canManageTickets() && (
                     <button 
                         type="button"
                         title="Delete Ticket"
@@ -551,6 +594,7 @@ const Tickets = () => {
                     >
                         <PiTrashDuotone />
                     </button>
+                )}
                 </div>
             ) 
         }
@@ -585,16 +629,16 @@ const Tickets = () => {
                     >
                         <PiEraserDuotone />
                     </button>
-                    <button
-                        title="Add Ticket"
-                        type="button"
-                        // className="w-full sm:w-auto text-green-500 px-3 py-2 rounded-xl text-xs bg-green-200 hover:bg-green-300 transition duration-200"
-                        className="text-green-700 px-3 py-2 rounded-xl text-xs bg-green-200 hover:bg-green-300 transition duration-200"
-                        onClick={handleOpenAddModal}
-                    >
-                        New Ticket
-                        {/* {<PiPenDuotone />} */}
-                    </button>
+                    {canManageTickets() && (
+                        <button
+                            title="Add Ticket"
+                            type="button"
+                            className="text-green-700 px-3 py-2 rounded-xl text-xs bg-green-200 hover:bg-green-300 transition duration-200"
+                            onClick={handleOpenAddModal}
+                        >
+                            New Ticket
+                        </button>
+                    )}
                 </div>
             </div>
             {error && (
@@ -652,7 +696,7 @@ const Tickets = () => {
                             </h3>
                             <div className="flex items-center gap-2">
                                 {/* Display "Close Ticket" option only if the current status is Open */}
-                                {!isEditingTicket && selectedTicket.status === 'Open' && (
+                                {!isEditingTicket && selectedTicket.status === 'Open' && canManageTickets() && (
                                     <button
                                         type="button"
                                         title="Close Ticket"
@@ -663,7 +707,7 @@ const Tickets = () => {
                                     </button>
                                 )}
                             
-                                {!isEditingTicket && (
+                                {!isEditingTicket && canManageTickets() && (
                                     <button
                                         type="button"
                                         title="Edit Ticket"
@@ -733,7 +777,18 @@ const Tickets = () => {
                                                         <li key={comment.id || idx} className="p-3 bg-gray-50 rounded-xl border border-gray-200">
                                                             <p className="text-sm text-gray-800">{comment.comment || comment.text || comment.body || '-'}</p>
                                                             <p className="text-xs text-gray-500 mt-2">
-                                                                {comment.createdAt ? new Date(comment.createdAt).toLocaleString() : 'Unknown time'}
+                                                                {
+                                                                  comment.createdAt
+                                                                    ? new Date(comment.createdAt).toLocaleString('en-GB', {
+                                                                        day: 'numeric',     // 1 - 31
+                                                                        month: 'numeric',   // 1 - 12
+                                                                        year: '2-digit',    // 26
+                                                                        hour: 'numeric',    // 1 - 12
+                                                                        minute: '2-digit',  // 00 - 59
+                                                                        hour12: true        // AM/PM
+                                                                      })
+                                                                    : 'Unknown time'
+                                                                }
                                                             </p>
                                                         </li>
                                                     ))}
