@@ -539,12 +539,12 @@ const Tickets = () => {
         { field: 'id', headerText: 'ID', width: '55', textAlign: 'Center'},
         { field: 'ticketDetails', 
             headerText: 'Ticket No / Subject', 
-            width: '250', 
+            width: '150', 
             textAlign: 'Left',
             template: TicketTemplate
         },
-        { field: 'dibuatOleh', headerText: 'Created By', width: '90', textAlign: 'Center'},
-        { field: 'departemen', headerText: 'Department', width: '100', textAlign: 'Center'},
+        { field: 'dibuatOleh', headerText: 'Created By', width: '120', textAlign: 'Center'},
+        { field: 'departemen', headerText: 'Department', width: '120', textAlign: 'Center'},
         { 
             field: 'status', 
             headerText: 'Status', 
