@@ -264,14 +264,14 @@ const Branches = () => {
                     >
                         {<PiMagnifyingGlassPlusDuotone />}
                     </button>
-                    <button 
+                    {/* <button 
                         type="button"
                         title="Delete Branch"
                         className="text-red-500 text-xl py-1 px-3 transition duration-200 font-semibold"
                         onClick={() => handleDelete(props)}
                     >
                         <PiTrashDuotone />
-                    </button>
+                    </button> */}
                 </div>
             ) 
         }
