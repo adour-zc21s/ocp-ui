@@ -569,7 +569,7 @@ const Tickets = () => {
           width: '100',
           textAlign: 'Center',
           type: 'dateTime',
-          format: 'd/M/yy h:mm a' // Result: 21/7/26 7:38 PM
+          format: 'd/M/yy' // Result: 21/7/26 7:38 PM
         },
         { 
             field: 'actions', 
@@ -688,12 +688,30 @@ const Tickets = () => {
                             aria-hidden="true" 
                             className="absolute inset-0 z-0 w-full h-full object-contain opacity-20 pointer-events-none select-none" 
                         />
-                        
                         {/* Modal Header */}
                         <div className="flex justify-between items-center border-b pb-3 mb-4">
-                            <h3 className="text-xl font-semibold text-gray-800 dark:text-gray-200">
-                                Ticket Details
-                            </h3>
+                            {/* Group Header Title & Created Date vertically */}
+                            <div className="flex flex-col">
+                                <h3 className="text-xl font-semibold text-gray-800 dark:text-gray-200">
+                                    Ticket Details
+                                </h3>
+                                <p className='text-xs text-gray-400'>
+                                    {
+                                      selectedTicket.createdAt
+                                        ? new Date(selectedTicket.createdAt).toLocaleString('en-GB', {
+                                            day: 'numeric',     // 1 - 31
+                                            month: 'numeric',   // 1 - 12
+                                            year: '2-digit',    // 26
+                                            hour: 'numeric',    // 1 - 12
+                                            minute: '2-digit',  // 00 - 59
+                                            hour12: true        // AM/PM
+                                          })
+                                        : 'Unknown time'
+                                    }
+                                </p>
+                            </div>
+                                
+                            {/* Action Buttons */}
                             <div className="flex items-center gap-2">
                                 {/* Display "Close Ticket" option only if the current status is Open */}
                                 {!isEditingTicket && selectedTicket.status === 'Open' && canManageTickets() && (

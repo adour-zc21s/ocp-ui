@@ -37,8 +37,8 @@ const Login = () => {
   // --- BANNER ROTATION STATE & ASSETS ---
   const banners = [
     '/banner/banner_ocp_login1.png',
-    '/banner/banner_ocp_login2.png', // Add your second banner file path here
-    '/banner/banner_ocp_login3.png'  // Add your third banner file path here
+    '/banner/banner_ocp_login2.png',
+    '/banner/banner_ocp_login3.png'
   ];
   const [currentBannerIndex, setCurrentBannerIndex] = useState(0);
 
@@ -240,7 +240,7 @@ const Login = () => {
         
         {/* Relative positioning context with a defined height container for absolute cross-fading items */}
         <div className="mt-4 relative h-[100px] w-full overflow-hidden rounded">
-          <a href="https://your-ad-link-here.com" target="_blank" rel="noopener noreferrer" className="block w-full h-full">
+          <a href="https://wa.me/+6281385229903" target="_blank" rel="noopener noreferrer" className="block w-full h-full">
             {banners.map((src, index) => (
               <img 
                 key={src}
