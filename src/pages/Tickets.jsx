@@ -543,7 +543,7 @@ const Tickets = () => {
             textAlign: 'Left',
             template: TicketTemplate
         },
-        { field: 'dibuatOleh', headerText: 'Created By', width: '120', textAlign: 'Center'},
+        { field: 'dibuatOleh', headerText: 'Created By', width: '100', textAlign: 'Center'},
         { field: 'departemen', headerText: 'Department', width: '120', textAlign: 'Center'},
         { 
             field: 'status', 
