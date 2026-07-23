@@ -1,20 +1,33 @@
 pipeline {
     agent any
 
+    tools {
+        // Must match the Node.js configuration name under "Global Tool Configuration" in Jenkins
+        nodejs 'node' 
+    }
+
     stages {
-        stage('Checkout') {
+        stage('1. Pull Code') {
             steps {
-                echo 'Checking out source code...'
+                echo 'Pulling latest code from Git...'
+                // Jenkins automatically checks out your repository when using "Pipeline script from SCM"
             }
         }
-        stage('Build') {
+
+        stage('2. Build Project') {
             steps {
-                sh 'echo "Compile code here"'
+                echo 'Installing dependencies and building...'
+                sh 'npm install'
+                sh 'npm run build'
             }
         }
-        stage('Test') {
+
+        stage('3. Start / Deploy Project') {
             steps {
-                sh 'echo "Run automated unit tests here"'
+                echo 'Deploying build output...'
+                // Example: Copy production build to local Nginx directory
+                sh 'rm -rf /var/www/html/*'
+                sh 'cp -r build/* /var/www/html/'
             }
         }
     }
