@@ -10,11 +10,10 @@ pipeline {
 
         stage('2. Build Project') {
             steps {
-                echo 'Installing dependencies fast via npm ci...'
-                sh 'npm ci --prefer-offline'
+                echo 'Installing dependencies...'
+                sh 'npm install'
         
                 echo 'Building React production bundle without source maps...'
-                // GENERATE_SOURCEMAP=false drastically speeds up Webpack build time
                 sh 'DISABLE_ESLINT_PLUGIN=true CI=false GENERATE_SOURCEMAP=false npm run build'
             }
         }
