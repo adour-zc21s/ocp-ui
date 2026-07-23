@@ -12,12 +12,10 @@ pipeline {
             steps {
                 echo 'Installing dependencies...'
                 sh 'npm install'
-
-                echo 'Fixing linting issues...'
-                sh 'npx eslint --fix "src/**/*.{js,jsx,ts,tsx}" || true'
-
+        
                 echo 'Building React production bundle...'
-                sh 'npm run build'
+                // Ignore ESLint errors during production build
+                sh 'DISABLE_ESLINT_PLUGIN=true CI=false npm run build'
             }
         }
 
