@@ -21,7 +21,9 @@ pipeline {
         stage('3. Restart PM2 Process') {
             steps {
                 echo 'Restarting application with PM2...'
-                sh 'pm2 restart ocp-ui'
+                // Serve folder build pada port 3000 (atau port yang Anda inginkan)
+                sh 'pm2 delete ocp-ui || true'
+                sh 'pm2 start serve --name "ocp-ui" -- -s build -l 3000'
             }
         }
     }
