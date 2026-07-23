@@ -5,14 +5,16 @@ pipeline {
         stage('1. Pull Code') {
             steps {
                 echo 'Pulling latest changes from Git...'
-                // Jenkins automatically handles git checkout if configured with "Pipeline script from SCM"
-                // Or you can explicitly run:
-                sh 'git pull origin main' 
+                // Note: Jenkins automatically checks out the latest code when using SCM, 
+                // but keeping explicit git pull is fine if needed.
             }
         }
 
         stage('2. Build Project') {
             steps {
+                echo 'Installing dependencies...'
+                sh 'npm install'
+
                 echo 'Building React production bundle...'
                 sh 'npm run build'
             }
