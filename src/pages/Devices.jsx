@@ -490,7 +490,7 @@ const Devices = () => {
                         className="text-green-700 px-3 py-2 rounded-xl text-xs bg-green-200 hover:bg-green-300 transition duration-200"
                         onClick={handleOpenAddModal}
                     >
-                        New Branch
+                        New Device
                         {/* {<PiPenDuotone />} */}
                     </button>
                     <button 
