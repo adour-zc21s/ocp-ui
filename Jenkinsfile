@@ -4,9 +4,7 @@ pipeline {
     stages {
         stage('1. Pull Code') {
             steps {
-                echo 'Pulling latest changes from Git...'
-                // Note: Jenkins automatically checks out the latest code when using SCM, 
-                // but keeping explicit git pull is fine if needed.
+                echo 'Pulling latest code...'
             }
         }
 
@@ -14,6 +12,9 @@ pipeline {
             steps {
                 echo 'Installing dependencies...'
                 sh 'npm install'
+
+                echo 'Fixing linting issues...'
+                sh 'npx eslint --fix "src/**/*.{js,jsx,ts,tsx}" || true'
 
                 echo 'Building React production bundle...'
                 sh 'npm run build'
