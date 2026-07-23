@@ -21,9 +21,16 @@ pipeline {
         stage('3. Restart PM2 Process') {
             steps {
                 echo 'Restarting application with PM2...'
-                // Serve folder build pada port 3000 (atau port yang Anda inginkan)
-                sh 'pm2 delete ocp-ui || true'
-                sh 'pm2 start serve --name "ocp-ui" -- -s build -l 3000'
+                sh '''
+                    # Pindah ke folder workspace
+                    cd "/var/lib/jenkins/workspace/OCP UI"
+                    
+                    # Matikan proses lama jika ada
+                    npx pm2 delete ocp-ui || true
+                    
+                    # Start aplikasi React build menggunakan npx serve
+                    npx pm2 start "npx serve -s build -l 3000" --name "ocp-ui"
+                '''
             }
         }
     }
