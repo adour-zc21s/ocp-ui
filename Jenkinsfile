@@ -20,9 +20,8 @@ pipeline {
 
         stage('3. Restart PM2 Process') {
             steps {
-                echo 'Restarting/Starting application with PM2...'
-                // Coba restart, jika tidak ada/error maka start baru
-                sh 'pm2 restart ocp-ui || pm2 start npm --name "ocp-ui" -- start'
+                echo 'Restarting application with PM2...'
+                sh 'pm2 restart ocp-ui'
             }
         }
     }
