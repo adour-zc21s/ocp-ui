@@ -12,7 +12,7 @@ pipeline {
             steps {
                 echo 'Installing dependencies...'
                 sh 'npm install'
-        
+
                 echo 'Building React production bundle...'
                 // Ignore ESLint errors during production build
                 sh 'DISABLE_ESLINT_PLUGIN=true CI=false npm run build'
@@ -22,7 +22,8 @@ pipeline {
         stage('3. Restart PM2 Process') {
             steps {
                 echo 'Restarting application with PM2...'
-                sh 'pm2 restart ocp-ui'
+                // Replace 'ubuntu' with the actual user that started PM2
+                sh 'sudo -u ubuntu pm2 restart ocp-ui'
             }
         }
     }
