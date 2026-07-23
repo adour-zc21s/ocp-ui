@@ -23,7 +23,7 @@ pipeline {
             steps {
                 echo 'Restarting application with PM2...'
                 // Replace 'ubuntu' with the actual user that started PM2
-                sh 'sudo -u ubuntu pm2 restart ocp-ui'
+                sh 'sudo -u ng pm2 restart ocp-ui'
             }
         }
     }
