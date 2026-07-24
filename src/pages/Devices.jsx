@@ -18,6 +18,7 @@ const Devices = () => {
     const [searchId, setSearchId] = useState('');
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [branches, setBranches] = useState([]);
     // Modal states
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedDevice, setSelectedDevice] = useState(null);
@@ -32,7 +33,7 @@ const Devices = () => {
         ipAddress: '',
         macAddress: '',
         user: '',
-        location: '',
+        branchName: '',
         description: '',
         purchaseDate: '',
         warrantyExpired: ''
@@ -46,7 +47,7 @@ const Devices = () => {
         ipAddress: '',
         macAddress: '',
         user: '',
-        location: '',
+        branchName: '',
         description: '',
         purchaseDate: '',
         warrantyExpired: ''
@@ -132,6 +133,31 @@ const Devices = () => {
         };
         fetchDeviceTypes();
     }, []);
+    // Fetch branches
+    useEffect(() => {
+        const fetchBranches = async () => {
+            try {
+                const headers = getAuthHeaders();
+                if (!headers) {
+                    return;
+                }
+
+                const response = await axios.get(`${REST_API_URL}/branches`, { headers });
+
+                let data = response.data;
+                if (data.data) data = data.data;
+                
+                if (Array.isArray(data)) {
+                    setBranches(data);
+                }
+            } catch (error) {
+                if (!handleAuthError(error)) {
+                    console.error('Failed to load branches:', error);
+                }
+            }
+        };
+        fetchBranches();
+    }, []);
 
     // Action Handlers
     const createEmptyDeviceForm = () => ({
@@ -142,7 +168,7 @@ const Devices = () => {
         ipAddress: '',
         macAddress: '',
         user: '',
-        location: '',
+        branchName: '',
         description: '',
         purchaseDate: '',
         warrantyExpired: ''
@@ -156,7 +182,7 @@ const Devices = () => {
         ipAddress: device.ipAddress || '',
         macAddress: device.macAddress || '',
         user: device.user || '',
-        location: device.location || '',
+        branchName: device.branchName || '',
         description: device.description || '',
         purchaseDate: device.purchaseDate || '',
         warrantyExpired: device.warrantyExpired || ''
@@ -616,8 +642,25 @@ const Devices = () => {
                                         <input type="text" name="user" value={editFormData.user} onChange={handleEditFormChange} className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500" />
                                     </div>
                                     <div>
-                                        <label className="block text-xs text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-1">Location</label>
-                                        <input type="text" name="location" value={editFormData.location} onChange={handleEditFormChange} className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                                        <label className="block text-xs text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-1">
+                                            Branch Name
+                                        </label>
+                                        <select
+                                            name="branchName"
+                                            value={editFormData.branchName}
+                                            onChange={handleEditFormChange}
+                                            className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        >
+                                            <option value="">Select a branch</option>
+                                            {branches.map((branch) => (
+                                                <option 
+                                                    key={branch.id || branch} 
+                                                    value={branch.branchName || branch.name || branch}
+                                                >
+                                                    {branch.branchName || branch.name || branch}
+                                                </option>
+                                            ))}
+                                        </select>
                                     </div>
                                     <div>
                                         <label className="block text-xs text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-1">
@@ -682,8 +725,8 @@ const Devices = () => {
                                         <p className="font-medium mb-3">{selectedDevice.user || '-'}</p>
                                     </div>
                                     <div>
-                                        <p className="text-xs text-gray-400 uppercase tracking-wider">Location</p>
-                                        <p className="font-medium mb-3">{selectedDevice.location || '-'}</p>
+                                        <p className="text-xs text-gray-400 uppercase tracking-wider">Branch</p>
+                                        <p className="font-medium mb-3">{selectedDevice.branchName || '-'}</p>
                                     </div>
                                 </div>
 
@@ -852,16 +895,22 @@ const Devices = () => {
                                     </div>
                                     <div>
                                         <label className="block text-xs text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-1">
-                                            Location
+                                            Branch
                                         </label>
-                                        <input
-                                            type="text"
-                                            name="location"
-                                            value={formData.location}
+                                        <select
+                                            name="branchName"
+                                            value={formData.branchName}
                                             onChange={handleFormChange}
                                             className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                            autoComplete="off"
-                                        />
+                                            required
+                                        >
+                                            <option value="">Select a branch</option>
+                                            {branches.map((branch) => (
+                                                <option key={branch.id || branch} value={branch.branchName || branch.name || branch}>
+                                                    {branch.branchName || branch.name || branch}
+                                                </option>
+                                            ))}
+                                        </select>
                                     </div>
                                 </div>
                             </div>
