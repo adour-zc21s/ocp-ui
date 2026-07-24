@@ -528,10 +528,17 @@ const Tickets = () => {
         }
     };
     const TicketTemplate = (props) => {
+      // Combine or select the full description text to display in the tooltip
+      const fullDescription = props.deskripsi || props.judul || props.noTiket;
+        
       return (
-        <div>
-          <div style={{ color: '#444', fontWeight: 'bold', fontSize: '10px' }}>{props.noTiket}</div>
-          <div style={{ fontSize: '12px' }}>{props.judul}</div>
+        <div title={fullDescription} style={{ cursor: 'pointer' }}>
+          <div style={{ color: '#444', fontWeight: 'bold', fontSize: '10px' }}>
+            {props.noTiket}
+          </div>
+          <div style={{ fontSize: '12px' }}>
+            {props.judul}
+          </div>
         </div>
       );
     };
