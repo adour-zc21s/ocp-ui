@@ -98,35 +98,17 @@ const Tickets = () => {
         try {
             setLoading(true);
             const headers = getAuthHeaders();
-            if (!headers) {
-                setError('No authentication token found. Please log in again.');
-                setLoading(false);
-                navigate('/login', { replace: true });
-                return;
-            }
-
-            // Send page and size as query parameters
             const response = await axios.get(`${REST_API_URL}?page=${currentPage}&size=${currentSize}`, { headers });
 
-            let resData = response.data;
-            if (resData.data) resData = resData.data;
+            let resData = response.data?.data || response.data;
 
-            // Spring Boot Page response returns an object with `content` and `totalElements`
             if (resData && Array.isArray(resData.content)) {
                 setTicketData(resData.content);
-                setTotalRecords(resData.totalElements || resData.content.length);
-            } else if (Array.isArray(resData)) {
-                // Fallback for non-paginated endpoints
-                setTicketData(resData);
-                setTotalRecords(resData.length);
-            } else {
-                setError('Unexpected data format from server');
+                // totalElements tells Syncfusion how many total rows exist in DB (e.g. 50 items = 5 pages)
+                setTotalRecords(resData.totalElements); 
             }
             setLoading(false);
         } catch (error) {
-            if (!handleAuthError(error)) {
-                setError('Failed to load tickets, please log out and log in again.');
-            }
             setLoading(false);
         }
     };
@@ -668,9 +650,8 @@ const Tickets = () => {
                     actionComplete={handleGridAction}
                     pageSettings={{ 
                         pageSize: pageSize, 
-                        currentPage: page + 1,        // Syncfusion uses 1-based indexing (Page 1 = 1)
-                        totalRecordsCount: totalRecords, // Total count from response.data.totalElements
-                        pageCount: 5                   // Number of page numbers to display in the pager bar
+                        currentPage: page + 1,           // Syncfusion displays (page 0 + 1 = 1)
+                        totalRecordsCount: totalRecords  // Critical: totalElements from Spring Boot
                     }}
                 >
                     <ColumnsDirective>
