@@ -402,32 +402,10 @@ const Tickets = () => {
             setLoading(false);
         }
     };
-    const handleClearSearch = async () => {
-        // reload all tickets
-        try {
-            setLoading(true);
-            const headers = getAuthHeaders();
-            if (!headers) {
-                setError('Please log in to load tickets.');
-                setLoading(false);
-                return;
-            }
-            const response = await axios.get(REST_API_URL, { headers });
-
-            let data = response.data;
-            if (data.data) data = data.data;
-            if (Array.isArray(data)) setTicketData(data);
-            else setTicketData([]);
-            setSearchId('');
-            setError(null);
-            setLoading(false);
-        } catch (err) {
-            if (!handleAuthError(err)) {
-                console.error('Reload tickets error:', err);
-                setError('Failed to reload tickets');
-            }
-            setLoading(false);
-        }
+    const handleClearSearch = () => {
+        setSearchId('');
+        setPage(0); // Reset back to Page 1 (index 0)
+        fetchTickets(0, pageSize); // Re-fetch using Spring Boot pageable
     };
     const handleCloseTicket = async () => {
         if (!selectedTicket?.id) return;
@@ -685,13 +663,14 @@ const Tickets = () => {
             ) : (
                 <GridComponent
                     id="gridcomp"
-                    dataSource={ticketData} // Array of current page items (10 items)
+                    dataSource={ticketData}
                     allowPaging={true}
                     actionComplete={handleGridAction}
                     pageSettings={{ 
                         pageSize: pageSize, 
-                        currentPage: page + 1, // Syncfusion uses 1-based index (Page 2 = 2)
-                        totalRecordsCount: totalRecords // Must come from response.data.totalElements
+                        currentPage: page + 1,        // Syncfusion uses 1-based indexing (Page 1 = 1)
+                        totalRecordsCount: totalRecords, // Total count from response.data.totalElements
+                        pageCount: 5                   // Number of page numbers to display in the pager bar
                     }}
                 >
                     <ColumnsDirective>
