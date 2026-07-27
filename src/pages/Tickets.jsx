@@ -26,7 +26,7 @@ const Tickets = () => {
     const [isEditingTicket, setIsEditingTicket] = useState(false);
     // backend pageable
     const [page, setPage] = useState(0);             // Spring Boot is 0-indexed
-    const [pageSize, setPageSize] = useState(10);
+    const [pageSize, setPageSize] = useState(5);
     const [totalRecords, setTotalRecords] = useState(0);
     // Form states for adding tickets
     const [formData, setFormData] = useState({
