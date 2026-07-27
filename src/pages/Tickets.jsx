@@ -138,13 +138,9 @@ const Tickets = () => {
 
     const handleGridAction = (args) => {
         if (args.requestType === 'paging') {
-            // Syncfusion is 1-indexed (args.currentPage starts at 1)
-            // Spring Boot is 0-indexed, so subtract 1
-            const newPage = args.currentPage - 1;
-            const newSize = args.pageSize;
-
-            setPage(newPage);
-            setPageSize(newSize);
+            // args.currentPage is 1-based (2 for page 2)
+            // Spring Boot is 0-based, so subtract 1
+            setPage(args.currentPage - 1); 
         }
     };
     // Fetch department
@@ -689,19 +685,13 @@ const Tickets = () => {
             ) : (
                 <GridComponent
                     id="gridcomp"
-                    dataSource={ticketData}
-                    width="auto"
+                    dataSource={ticketData} // Array of current page items (10 items)
                     allowPaging={true}
-                    allowSorting={true}
-                    allowExcelExport={true}
-                    allowPdfExport={true}
-                    contextMenuItems={contextMenuItems}
-                    editSettings={editing}
                     actionComplete={handleGridAction}
                     pageSettings={{ 
                         pageSize: pageSize, 
-                        currentPage: page + 1, // Syncfusion uses 1-based indexing
-                        totalRecordsCount: totalRecords 
+                        currentPage: page + 1, // Syncfusion uses 1-based index (Page 2 = 2)
+                        totalRecordsCount: totalRecords // Must come from response.data.totalElements
                     }}
                 >
                     <ColumnsDirective>
