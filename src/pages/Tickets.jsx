@@ -24,6 +24,10 @@ const Tickets = () => {
     const [selectedTicket, setSelectedTicket] = useState(null);
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [isEditingTicket, setIsEditingTicket] = useState(false);
+    // backend pageable
+    const [page, setPage] = useState(0);             // Spring Boot is 0-indexed
+    const [pageSize, setPageSize] = useState(10);
+    const [totalRecords, setTotalRecords] = useState(0);
     // Form states for adding tickets
     const [formData, setFormData] = useState({
         judul: '',
@@ -90,38 +94,59 @@ const Tickets = () => {
         return false;
     };
     // Fetch tickets on component mount
-    useEffect(() => {
-        const fetchTickets = async () => {
-            try {
-                const headers = getAuthHeaders();
-                if (!headers) {
-                    setError('No authentication token found. Please log in again.');
-                    setLoading(false);
-                    navigate('/login', { replace: true });
-                    return;
-                }
-
-                const response = await axios.get(REST_API_URL, { headers });
-
-                let data = response.data;
-                if (data.data) data = data.data;
-                
-                if (Array.isArray(data)) {
-                    setTicketData(data);
-                } else {
-                    setError('Unexpected data format from server');
-                }
+    const fetchTickets = async (currentPage = page, currentSize = pageSize) => {
+        try {
+            setLoading(true);
+            const headers = getAuthHeaders();
+            if (!headers) {
+                setError('No authentication token found. Please log in again.');
                 setLoading(false);
-            } catch (error) {
-                if (!handleAuthError(error)) {
-                    setError('Failed to load tickets, please log out and log in again.');
-                }
-                setLoading(false);
+                navigate('/login', { replace: true });
+                return;
             }
-        };
-        fetchTickets();
-    }, []);
 
+            // Send page and size as query parameters
+            const response = await axios.get(`${REST_API_URL}?page=${currentPage}&size=${currentSize}`, { headers });
+
+            let resData = response.data;
+            if (resData.data) resData = resData.data;
+
+            // Spring Boot Page response returns an object with `content` and `totalElements`
+            if (resData && Array.isArray(resData.content)) {
+                setTicketData(resData.content);
+                setTotalRecords(resData.totalElements || resData.content.length);
+            } else if (Array.isArray(resData)) {
+                // Fallback for non-paginated endpoints
+                setTicketData(resData);
+                setTotalRecords(resData.length);
+            } else {
+                setError('Unexpected data format from server');
+            }
+            setLoading(false);
+        } catch (error) {
+            if (!handleAuthError(error)) {
+                setError('Failed to load tickets, please log out and log in again.');
+            }
+            setLoading(false);
+        }
+    };
+
+    // Re-fetch whenever page or pageSize changes
+    useEffect(() => {
+        fetchTickets(page, pageSize);
+    }, [page, pageSize]);
+
+    const handleGridAction = (args) => {
+        if (args.requestType === 'paging') {
+            // Syncfusion is 1-indexed (args.currentPage starts at 1)
+            // Spring Boot is 0-indexed, so subtract 1
+            const newPage = args.currentPage - 1;
+            const newSize = args.pageSize;
+
+            setPage(newPage);
+            setPageSize(newSize);
+        }
+    };
     // Fetch department
     useEffect(() => {
         const fetchDepartments = async () => {
@@ -530,7 +555,7 @@ const Tickets = () => {
     const TicketTemplate = (props) => {
       // Combine or select the full description text to display in the tooltip
       const fullDescription = props.deskripsi || props.judul || props.noTiket;
-        
+
       return (
         <div title={fullDescription} style={{ cursor: 'pointer' }}>
           <div style={{ color: '#444', fontWeight: 'bold', fontSize: '10px' }}>
@@ -666,13 +691,18 @@ const Tickets = () => {
                     id="gridcomp"
                     dataSource={ticketData}
                     width="auto"
-                    allowPaging
-                    allowSorting
-                    allowExcelExport
-                    allowPdfExport
+                    allowPaging={true}
+                    allowSorting={true}
+                    allowExcelExport={true}
+                    allowPdfExport={true}
                     contextMenuItems={contextMenuItems}
                     editSettings={editing}
-                    pageSettings={{ pageCount: 5 }}
+                    actionComplete={handleGridAction}
+                    pageSettings={{ 
+                        pageSize: pageSize, 
+                        currentPage: page + 1, // Syncfusion uses 1-based indexing
+                        totalRecordsCount: totalRecords 
+                    }}
                 >
                     <ColumnsDirective>
                         {ticketsGrid.map((item, index) => (
