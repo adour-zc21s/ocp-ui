@@ -26,7 +26,7 @@ import { useNavigate } from 'react-router-dom';
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL; 
 const REST_API_URL = `${API_BASE_URL}/api/v1/tickets`;
 
-const Tickets = () => {
+const TicketsOpen = () => {
     // Reference for Syncfusion Grid to control pager UI
     const gridRef = useRef(null);
 
@@ -960,4 +960,4 @@ const Tickets = () => {
     );
 };
 
-export default Tickets;
+export default TicketsOpen;
