@@ -19,8 +19,8 @@ import {
     PiTrashDuotone, 
     PiEraserDuotone 
 } from "react-icons/pi";
-import { Header } from '../components';
-import { useStateContext } from '../contexts/ContextProvider';
+import { Header } from '../../components';
+import { useStateContext } from '../../contexts/ContextProvider';
 import { useNavigate } from 'react-router-dom';
 
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL; 
