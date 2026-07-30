@@ -136,81 +136,70 @@ const TicketsOpen = () => {
 
     // 1. Fetch Ticket Stats from Backend Endpoint
     const fetchTicketStats = async () => {
-       try {
-           const headers = getAuthHeaders();
-           if (!headers) return;
-        
-           const response = await axios.get(`${REST_API_URL}/stats`, { headers });
-           const rawData = response.data?.data || response.data;
-        
-           if (rawData && typeof rawData === 'object') {
-               setTicketStats({
-                   total: Number(rawData.total) || 0,
-                   open: Number(rawData.open) || 0,
-                   pending: Number(rawData.pending) || 0,
-                   closed: Number(rawData.closed) || 0
-               });
-           } else {
-               console.warn('Unexpected stats format from server:', response.data);
-           }
-       } catch (err) {
-           if (!handleAuthError(err)) {
-               console.error('Fetch stats error:', err);
-           }
-       }
-    ;
+        try {
+            const headers = getAuthHeaders();
+            if (!headers) return;
+
+            const response = await axios.get(`${REST_API_URL}/stats`, { headers });
+            const data = response.data?.data || response.data;
+
+            if (data) {
+                setTicketStats({
+                    total: Number(data.total) || 0,
+                    open: Number(data.open) || 0,
+                    pending: Number(data.pending) || 0,
+                    closed: Number(data.closed) || 0
+                });
+            }
+        } catch (err) {
+            if (!handleAuthError(err)) {
+                console.error('Fetch stats error:', err);
+            }
+        }
+    };
 
     // 2. Fetch tickets grid with pagination
     const fetchTickets = async (currentPage = page, currentSize = pageSize) => {
-        try {
-            setLoading(true);
-            setError(null);
-            const headers = getAuthHeaders();
-            const response = await axios.get(`${REST_API_URL}?page=${currentPage}&size=${currentSize}`, { headers });
+    try {
+        setLoading(true);
+        const headers = getAuthHeaders();
+        const response = await axios.get(`${REST_API_URL}?page=${currentPage}&size=${currentSize}`, { headers });
 
-            // Ensure response is actually JSON object
-            if (typeof response.data !== 'object' || response.data === null) {
-                throw new Error('Unexpected data format from server: Response is not a valid JSON object.');
-            }
+        // Extract payload regardless of nesting level
+        const rawPayload = response.data?.data ?? response.data;
 
-            // Safely extract payload regardless of wrapper structure
-            let content = [];
-            let totalElements = 0;
+        let rows = [];
+        let totalCount = 0;
 
-            if (Array.isArray(response.data)) {
-                // Server returned array directly: [...]
-                content = response.data;
-                totalElements = response.data.length;
-            } else if (response.data.data) {
-                // Wrapped response: { data: { content: [...], totalElements: N } } OR { data: [...] }
-                const nested = response.data.data;
-                if (Array.isArray(nested)) {
-                    content = nested;
-                    totalElements = nested.length;
-                } else if (nested && Array.isArray(nested.content)) {
-                    content = nested.content;
-                    totalElements = nested.totalElements || nested.content.length;
-                }
-            } else if (Array.isArray(response.data.content)) {
-                // Direct Spring Boot Page response: { content: [...], totalElements: N }
-                content = response.data.content;
-                totalElements = response.data.totalElements || response.data.content.length;
-            }
-
-            setTicketData({
-                result: content,
-                count: totalElements
-            });
-        } catch (err) {
-            if (!handleAuthError(err)) {
-                console.error('Fetch tickets error:', err);
-                setError(err.message || 'Failed to load tickets due to unexpected format.');
-                setTicketData({ result: [], count: 0 });
-            }
-        } finally {
-            setLoading(false);
+        if (Array.isArray(rawPayload)) {
+            // Case 1: Backend returns a direct array [...]
+            rows = rawPayload;
+            totalCount = rawPayload.length;
+        } else if (rawPayload && Array.isArray(rawPayload.content)) {
+            // Case 2: Spring Boot PageImpl structure { content: [...], totalElements: N }
+            rows = rawPayload.content;
+            totalCount = rawPayload.totalElements || rawPayload.content.length;
+        } else if (rawPayload && Array.isArray(rawPayload.result)) {
+            // Case 3: Syncfusion structure { result: [...], count: N }
+            rows = rawPayload.result;
+            totalCount = rawPayload.count || rawPayload.result.length;
         }
-    };
+
+        // Ensure array entries do not contain null/undefined items
+        const cleanRows = rows.filter(item => item !== null && item !== undefined);
+
+        setTicketData({
+            result: cleanRows,
+            count: totalCount
+        });
+
+    } catch (err) {
+        console.error('Fetch tickets error:', err);
+        setTicketData({ result: [], count: 0 });
+    } finally {
+        setLoading(false);
+    }
+};
 
     // Load Dropdown Options Once
     useEffect(() => {
