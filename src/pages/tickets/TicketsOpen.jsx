@@ -27,10 +27,9 @@ const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 const REST_API_URL = `${API_BASE_URL}/api/v1/tickets`;
 
 const TicketsOpen = () => {
-    // Reference for Syncfusion Grid to control pager UI
     const gridRef = useRef(null);
 
-    // Data state initialized for Syncfusion DataResult { result: [], count: 0 }
+    // Initial state guaranteed to be valid for Syncfusion Grid
     const [ticketData, setTicketData] = useState({ result: [], count: 0 });
     const [departments, setDepartments] = useState([]);
     const [accounts, setAccounts] = useState([]);
@@ -39,6 +38,14 @@ const TicketsOpen = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
+    // Summary Card Stats
+    const [ticketStats, setTicketStats] = useState({
+        total: 0,
+        open: 0,
+        pending: 0,
+        closed: 0
+    });
+
     // Modal states
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedTicket, setSelectedTicket] = useState(null);
@@ -46,7 +53,7 @@ const TicketsOpen = () => {
     const [isEditingTicket, setIsEditingTicket] = useState(false);
 
     // Backend pageable states
-    const [page, setPage] = useState(0);             // Spring Boot is 0-indexed
+    const [page, setPage] = useState(0);
     const [pageSize] = useState(5);
 
     // Form states
@@ -127,66 +134,63 @@ const TicketsOpen = () => {
         return false;
     };
 
-    // Fetch ONLY OPEN tickets with pagination
+    // 1. Fetch Ticket Stats from Backend Endpoint
+    const fetchTicketStats = async () => {
+        try {
+            const headers = getAuthHeaders();
+            if (!headers) return;
+
+            const response = await axios.get(`${REST_API_URL}/stats`, { headers });
+            const data = response.data?.data || response.data;
+
+            if (data) {
+                setTicketStats({
+                    total: Number(data.total) || 0,
+                    open: Number(data.open) || 0,
+                    pending: Number(data.pending) || 0,
+                    closed: Number(data.closed) || 0
+                });
+            }
+        } catch (err) {
+            if (!handleAuthError(err)) {
+                console.error('Fetch stats error:', err);
+            }
+        }
+    };
+
+    // 2. Fetch tickets grid with pagination
     const fetchTickets = async (currentPage = page, currentSize = pageSize) => {
         try {
             setLoading(true);
             const headers = getAuthHeaders();
-            // Appended status=Open query parameter to REST_API_URL
-            const response = await axios.get(`${REST_API_URL}?status=Open&page=${currentPage}&size=${currentSize}`, { headers });
+            const response = await axios.get(`${REST_API_URL}?page=${currentPage}&size=${currentSize}`, { headers });
         
             let resData = response.data?.data || response.data;
 
             if (resData && Array.isArray(resData.content)) {
-                // Filter client-side just in case backend returns unfiltered data
-                const openContent = resData.content.filter(t => t.status === 'Open');
                 setTicketData({
-                    result: openContent,
-                    count: resData.totalElements || openContent.length
+                    result: resData.content,
+                    count: resData.totalElements || 0
                 });
             } else if (Array.isArray(resData)) {
-                const openData = resData.filter(t => t.status === 'Open');
                 setTicketData({
-                    result: openData,
-                    count: openData.length
+                    result: resData,
+                    count: resData.length
                 });
             } else {
                 setTicketData({ result: [], count: 0 });
             }
         } catch (err) {
             if (!handleAuthError(err)) {
-                console.error('Fetch open tickets error:', err);
+                console.error('Fetch tickets error:', err);
             }
+            setTicketData({ result: [], count: 0 });
         } finally {
             setLoading(false);
         }
     };
 
-    // Re-fetch tickets when page or pageSize updates
-    useEffect(() => {
-        fetchTickets(page, pageSize);
-    }, [page, pageSize]);
-
-    // Force Syncfusion Pager UI to highlight the active page button correctly
-    useEffect(() => {
-        if (gridRef.current && gridRef.current.pagerModule) {
-            gridRef.current.pagerModule.goToPage(page + 1);
-        }
-    }, [ticketData, page]);
-
-    // Handle Paging events from Syncfusion Pager
-    const handleGridAction = (args) => {
-        if (args.requestType === 'paging') {
-            args.cancel = true;
-
-            const targetPage = args.currentPage - 1;
-            if (targetPage !== page) {
-                setPage(targetPage);
-            }
-        }
-    };
-
-    // Fetch static dropdowns
+    // Load Dropdown Options Once
     useEffect(() => {
         const fetchDropdownData = async () => {
             const headers = getAuthHeaders();
@@ -215,7 +219,28 @@ const TicketsOpen = () => {
         fetchDropdownData();
     }, []);
 
-    // Form handlers
+    // Load Grid & Stats on Page/PageSize Change
+    useEffect(() => {
+        fetchTickets(page, pageSize);
+        fetchTicketStats();
+    }, [page, pageSize]);
+
+    useEffect(() => {
+        if (gridRef.current && gridRef.current.pagerModule) {
+            gridRef.current.pagerModule.goToPage(page + 1);
+        }
+    }, [ticketData, page]);
+
+    const handleGridAction = (args) => {
+        if (args.requestType === 'paging') {
+            args.cancel = true;
+            const targetPage = args.currentPage - 1;
+            if (targetPage !== page) {
+                setPage(targetPage);
+            }
+        }
+    };
+
     const createEmptyTicketForm = () => ({
         noTiket: '',
         judul: '',
@@ -259,6 +284,7 @@ const TicketsOpen = () => {
     };
 
     const handleView = (rowData) => {
+        if (!rowData) return;
         setSelectedTicket(rowData);
         setEditFormData(mapTicketToFormData(rowData));
         setIsEditingTicket(false);
@@ -323,13 +349,10 @@ const TicketsOpen = () => {
 
             const updatedTicket = response.data?.data || response.data || { ...selectedTicket, ...editFormData };
             
-            setTicketData(prev => ({
-                ...prev,
-                result: prev.result.map(t => t.id === selectedTicket.id ? updatedTicket : t)
-            }));
-            
-            setSelectedTicket(updatedTicket);
             setIsEditingTicket(false);
+            fetchTickets(page, pageSize);
+            fetchTicketStats();
+            setSelectedTicket(updatedTicket);
             setError(null);
             alert('Ticket updated successfully');
         } catch (err) {
@@ -340,7 +363,6 @@ const TicketsOpen = () => {
         }
     };
 
-    // Search handlers
     const handleSearchInputChange = (e) => {
         setSearchId(e.target.value);
     };
@@ -352,9 +374,8 @@ const TicketsOpen = () => {
         }
         const trimmed = searchId.trim();
 
-        // Local search check among open tickets
-        const localMatches = ticketData.result.filter((ticket) =>
-            String(ticket.judul || ticket.ticketName || '').toLowerCase().includes(trimmed.toLowerCase())
+        const localMatches = (ticketData.result || []).filter((ticket) =>
+            String(ticket?.judul || ticket?.ticketName || '').toLowerCase().includes(trimmed.toLowerCase())
         );
 
         if (localMatches.length > 0) {
@@ -368,21 +389,16 @@ const TicketsOpen = () => {
             const headers = getAuthHeaders();
             if (!headers) return;
 
-            const response = await axios.get(`${REST_API_URL}/?status=Open&name=${encodeURIComponent(trimmed)}`, { headers });
+            const response = await axios.get(`${REST_API_URL}/?name=${encodeURIComponent(trimmed)}`, { headers });
             let data = response.data?.data || response.data;
 
             if (!data) {
                 setTicketData({ result: [], count: 0 });
                 alert('Ticket not found');
             } else if (Array.isArray(data)) {
-                const openData = data.filter(t => t.status === 'Open');
-                setTicketData({ result: openData, count: openData.length });
+                setTicketData({ result: data, count: data.length });
             } else {
-                if (data.status === 'Open') {
-                    setTicketData({ result: [data], count: 1 });
-                } else {
-                    setTicketData({ result: [], count: 0 });
-                }
+                setTicketData({ result: [data], count: 1 });
             }
             setError(null);
         } catch (err) {
@@ -398,6 +414,7 @@ const TicketsOpen = () => {
         setSearchId('');
         setPage(0);
         fetchTickets(0, pageSize);
+        fetchTicketStats();
     };
 
     const handleCloseTicket = async () => {
@@ -410,15 +427,10 @@ const TicketsOpen = () => {
 
             await axios.put(`${REST_API_URL}/${encodeURIComponent(selectedTicket.id)}/close`, {}, { headers });
 
-            // Remove the ticket from view immediately since it is no longer Open
-            setTicketData(prev => ({
-                ...prev,
-                result: prev.result.filter(t => t.id !== selectedTicket.id),
-                count: Math.max(0, prev.count - 1)
-            }));
-
+            fetchTickets(page, pageSize);
+            fetchTicketStats();
             handleCloseModal();
-            alert('Ticket closed successfully and moved out of Open Tickets.');
+            alert('Ticket closed successfully and notification email sent.');
         } catch (err) {
             if (!handleAuthError(err)) {
                 alert(err.response?.data?.message || 'Failed to close ticket');
@@ -429,26 +441,17 @@ const TicketsOpen = () => {
     const handleAddTicket = async (e) => {
         e.preventDefault();
         if (!ensureAdminAccess('create tickets')) return;
-
+    
         try {
             const headers = getAuthHeaders();
             if (!headers) return;
-
-            if (!formData.judul || !formData.departemen || !formData.emailNotification) {
-                alert('Please fill in all required fields');
-                return;
-            }
-
-            const response = await axios.post(REST_API_URL, formData, { headers });
-            const newTicket = response.data?.data || response.data;
-
-            setTicketData(prev => ({
-                result: [newTicket, ...prev.result],
-                count: prev.count + 1
-            }));
-
-            alert('Ticket added successfully');
+        
+            await axios.post(REST_API_URL, formData, { headers });
+        
             handleCloseAddModal();
+            fetchTickets(page, pageSize);
+            fetchTicketStats();
+            alert('Ticket added successfully');
         } catch (err) {
             if (!handleAuthError(err)) {
                 alert(err.response?.data?.message || 'Failed to add ticket');
@@ -486,21 +489,19 @@ const TicketsOpen = () => {
     };
 
     const handleDelete = async (rowData) => {
-        if (!ensureAdminAccess('delete tickets')) return;
+        if (!rowData?.id || !ensureAdminAccess('delete tickets')) return;
         if (!window.confirm(`Are you sure you want to delete ticket: ${rowData.noTiket}?`)) return;
-
+        
         try {
             setLoading(true);
             const headers = getAuthHeaders();
             if (!headers) return;
-
+        
             await axios.delete(`${REST_API_URL}/${encodeURIComponent(rowData.id)}`, { headers });
-
-            setTicketData(prev => ({
-                result: prev.result.filter(t => t.id !== rowData.id),
-                count: Math.max(0, prev.count - 1)
-            }));
-
+        
+            await fetchTickets(page, pageSize);
+            await fetchTicketStats();
+        
             alert(`Ticket "${rowData.noTiket}" deleted successfully`);
             setError(null);
         } catch (err) {
@@ -513,6 +514,7 @@ const TicketsOpen = () => {
     };
 
     const TicketTemplate = (props) => {
+        if (!props) return null;
         const fullDescription = props.deskripsi || props.judul || props.noTiket;
         return (
             <div title={fullDescription} style={{ cursor: 'pointer' }}>
@@ -536,11 +538,21 @@ const TicketsOpen = () => {
             headerText: 'Status', 
             width: '90', 
             textAlign: 'Center',
-            template: (props) => (
-                <span className="inline-block px-3 py-1 rounded-full text-xs font-bold tracking-wide bg-green-100 text-green-500">
-                    {props.status || 'Open'}
-                </span>
-            )
+            template: (props) => {
+                if (!props) return null;
+                const statusLower = (props.status || '').toLowerCase();
+                let badgeStyle = 'bg-gray-100 text-gray-500';
+
+                if (statusLower === 'open') badgeStyle = 'bg-green-100 text-green-500';
+                else if (statusLower === 'pending') badgeStyle = 'bg-amber-100 text-amber-500';
+                else if (statusLower === 'closed') badgeStyle = 'bg-red-100 text-red-500';
+
+                return (
+                    <span className={`inline-block px-3 py-1 rounded-full text-xs font-bold tracking-wide ${badgeStyle}`}>
+                        {props.status}
+                    </span>
+                );
+            }
         },
         {
             field: 'createdAt',
@@ -581,8 +593,53 @@ const TicketsOpen = () => {
 
     return (
         <div className="m-2 md:m-10 mt-24 p-2 md:p-10 bg-white rounded-xl relative">
+            <Header category="Tickets" title="Ticket Dashboard" />
+
+            {/* --- SUMMARY METRIC CARDS --- */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6 mt-4">
+                <div className="p-4 bg-white dark:bg-secondary-dark-bg border border-gray-100 rounded-2xl shadow-sm flex items-center justify-between">
+                    <div>
+                        <p className="text-xs text-gray-400 font-semibold uppercase tracking-wider">Total Tickets</p>
+                        <h4 className="text-2xl font-bold text-gray-800 dark:text-gray-100 mt-1">{ticketStats.total}</h4>
+                    </div>
+                    <div className="p-3 bg-blue-50 text-blue-500 rounded-xl text-xl font-bold">
+                        📊
+                    </div>
+                </div>
+
+                <div className="p-4 bg-white dark:bg-secondary-dark-bg border border-gray-100 rounded-2xl shadow-sm flex items-center justify-between">
+                    <div>
+                        <p className="text-xs text-gray-400 font-semibold uppercase tracking-wider">Open Tickets</p>
+                        <h4 className="text-2xl font-bold text-green-600 mt-1">{ticketStats.open}</h4>
+                    </div>
+                    <div className="p-3 bg-green-50 text-green-500 rounded-xl text-xl font-bold">
+                        🟢
+                    </div>
+                </div>
+
+                <div className="p-4 bg-white dark:bg-secondary-dark-bg border border-gray-100 rounded-2xl shadow-sm flex items-center justify-between">
+                    <div>
+                        <p className="text-xs text-gray-400 font-semibold uppercase tracking-wider">Pending Tickets</p>
+                        <h4 className="text-2xl font-bold text-amber-500 mt-1">{ticketStats.pending}</h4>
+                    </div>
+                    <div className="p-3 bg-amber-50 text-amber-500 rounded-xl text-xl font-bold">
+                        ⏳
+                    </div>
+                </div>
+
+                <div className="p-4 bg-white dark:bg-secondary-dark-bg border border-gray-100 rounded-2xl shadow-sm flex items-center justify-between">
+                    <div>
+                        <p className="text-xs text-gray-400 font-semibold uppercase tracking-wider">Closed Tickets</p>
+                        <h4 className="text-2xl font-bold text-red-500 mt-1">{ticketStats.closed}</h4>
+                    </div>
+                    <div className="p-3 bg-red-50 text-red-500 rounded-xl text-xl font-bold">
+                        🔴
+                    </div>
+                </div>
+            </div>
+
+            {/* --- CONTROLS & SEARCH BAR --- */}
             <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
-                <Header category="Tickets" title="Open Tickets" />
                 <div className="flex flex-wrap items-center gap-2">
                     <form
                         onSubmit={(e) => {
@@ -593,7 +650,7 @@ const TicketsOpen = () => {
                     >
                         <input
                             type="text"
-                            placeholder="Search open tickets..."
+                            placeholder="Search by name"
                             value={searchId}
                             onChange={handleSearchInputChange}
                             className="flex-1 sm:flex-initial px-2 py-2 border border-gray-300 rounded-xl bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-300 text-sm"
@@ -630,7 +687,7 @@ const TicketsOpen = () => {
             <div className="relative min-h-[300px]">
                 {loading && (
                     <div className="absolute inset-0 bg-white/70 z-20 flex items-center justify-center backdrop-blur-[1px]">
-                        <p className="text-gray-600 font-medium">Loading open tickets...</p>
+                        <p className="text-gray-600 font-medium">Loading tickets...</p>
                     </div>
                 )}
 
