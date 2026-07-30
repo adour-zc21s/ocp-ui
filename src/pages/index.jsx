@@ -1,7 +1,7 @@
 export { default as Login } from './Login';
 export { default as Ecommerce } from './Ecommerce';
 export { default as Devices } from './Devices';
-export { default as Tickets } from './tickets/TicketsOpen';
+export { default as TicketsOpen } from './tickets/TicketsOpen';
 export {default as Emails } from './Emails';
 export { default as Accounts } from './Accounts';
 export { default as Branches } from './Branches';
