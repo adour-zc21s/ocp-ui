@@ -4,6 +4,8 @@ pipeline {
     stages {
         stage('1. Pull Code') {
             steps {
+                // 1. Wipe old artifacts and stale cached files before pulling
+                cleanWs()
                 echo 'Pulling latest code...'
             }
         }
@@ -12,6 +14,10 @@ pipeline {
             steps {
                 echo 'Installing dependencies...'
                 sh 'npm install'
+
+                echo 'Cleaning previous build folder...'
+                // 2. Explicitly remove the old build output directory
+                sh 'rm -rf build'
 
                 echo 'Building React production bundle without source maps...'
                 sh 'DISABLE_ESLINT_PLUGIN=true CI=false GENERATE_SOURCEMAP=false npm run build'
