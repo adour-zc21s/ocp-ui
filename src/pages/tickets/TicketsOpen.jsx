@@ -160,46 +160,41 @@ const TicketsOpen = () => {
 
     // 2. Fetch tickets grid with pagination
     const fetchTickets = async (currentPage = page, currentSize = pageSize) => {
-    try {
-        setLoading(true);
-        const headers = getAuthHeaders();
-        const response = await axios.get(`${REST_API_URL}?page=${currentPage}&size=${currentSize}`, { headers });
+        try {
+            setLoading(true);
+            const headers = getAuthHeaders();
+            const response = await axios.get(`${REST_API_URL}?page=${currentPage}&size=${currentSize}`, { headers });
 
-        // Extract payload regardless of nesting level
-        const rawPayload = response.data?.data ?? response.data;
+            const rawPayload = response.data?.data ?? response.data;
 
-        let rows = [];
-        let totalCount = 0;
+            let rows = [];
+            let totalCount = 0;
 
-        if (Array.isArray(rawPayload)) {
-            // Case 1: Backend returns a direct array [...]
-            rows = rawPayload;
-            totalCount = rawPayload.length;
-        } else if (rawPayload && Array.isArray(rawPayload.content)) {
-            // Case 2: Spring Boot PageImpl structure { content: [...], totalElements: N }
-            rows = rawPayload.content;
-            totalCount = rawPayload.totalElements || rawPayload.content.length;
-        } else if (rawPayload && Array.isArray(rawPayload.result)) {
-            // Case 3: Syncfusion structure { result: [...], count: N }
-            rows = rawPayload.result;
-            totalCount = rawPayload.count || rawPayload.result.length;
+            if (Array.isArray(rawPayload)) {
+                rows = rawPayload;
+                totalCount = rawPayload.length;
+            } else if (rawPayload && Array.isArray(rawPayload.content)) {
+                rows = rawPayload.content;
+                totalCount = rawPayload.totalElements || rawPayload.content.length;
+            } else if (rawPayload && Array.isArray(rawPayload.result)) {
+                rows = rawPayload.result;
+                totalCount = rawPayload.count || rawPayload.result.length;
+            }
+
+            const cleanRows = rows.filter(item => item !== null && item !== undefined);
+
+            setTicketData({
+                result: cleanRows,
+                count: totalCount
+            });
+
+        } catch (err) {
+            console.error('Fetch tickets error:', err);
+            setTicketData({ result: [], count: 0 });
+        } finally {
+            setLoading(false);
         }
-
-        // Ensure array entries do not contain null/undefined items
-        const cleanRows = rows.filter(item => item !== null && item !== undefined);
-
-        setTicketData({
-            result: cleanRows,
-            count: totalCount
-        });
-
-    } catch (err) {
-        console.error('Fetch tickets error:', err);
-        setTicketData({ result: [], count: 0 });
-    } finally {
-        setLoading(false);
-    }
-};
+    };
 
     // Load Dropdown Options Once
     useEffect(() => {
@@ -262,11 +257,11 @@ const TicketsOpen = () => {
     });
 
     const mapTicketToFormData = (ticket = {}) => ({
-        noTiket: ticket.noTiket || '',
-        judul: ticket.judul || '',
-        departemen: ticket.departemen || '',
-        emailNotification: ticket.account || '',
-        priority: ticket.priority || ''
+        noTiket: ticket?.noTiket || '',
+        judul: ticket?.judul || '',
+        departemen: ticket?.departemen || '',
+        emailNotification: ticket?.account || '',
+        priority: ticket?.priority || ''
     });    
 
     const fetchComments = async (ticketId) => {
@@ -428,6 +423,7 @@ const TicketsOpen = () => {
         fetchTicketStats();
     };
 
+    // FIXED: Added setTimeout to handle grid unmounting race condition cleanly
     const handleCloseTicket = async () => {
         if (!selectedTicket?.id || !ensureAdminAccess('close tickets')) return;
         if (!window.confirm(`Are you sure you want to close ticket: ${selectedTicket.noTiket}?`)) return;
@@ -438,10 +434,21 @@ const TicketsOpen = () => {
 
             await axios.put(`${REST_API_URL}/${encodeURIComponent(selectedTicket.id)}/close`, {}, { headers });
 
-            fetchTickets(page, pageSize);
-            fetchTicketStats();
-            handleCloseModal();
             alert('Ticket closed successfully and notification email sent.');
+
+            // Refresh grid and stats
+            await fetchTickets(page, pageSize);
+            await fetchTicketStats();
+
+            if (gridRef.current) {
+                gridRef.current.refresh();
+            }
+
+            // Defer closing modal to let Syncfusion finish event loop
+            setTimeout(() => {
+                handleCloseModal();
+            }, 50);
+
         } catch (err) {
             if (!handleAuthError(err)) {
                 alert(err.response?.data?.message || 'Failed to close ticket');
@@ -524,16 +531,17 @@ const TicketsOpen = () => {
         }
     };
 
+    // FIXED: Safe null guard inside Template component
     const TicketTemplate = (props) => {
-        if (!props) return null;
-        const fullDescription = props.deskripsi || props.judul || props.noTiket;
+        if (!props || typeof props !== 'object') return null;
+        const fullDescription = props.deskripsi || props.judul || props.noTiket || '';
         return (
             <div title={fullDescription} style={{ cursor: 'pointer' }}>
                 <div style={{ color: '#444', fontWeight: 'bold', fontSize: '10px' }}>
-                    {props.noTiket}
+                    {props.noTiket || ''}
                 </div>
                 <div style={{ fontSize: '12px' }}>
-                    {props.judul}
+                    {props.judul || ''}
                 </div>
             </div>
         );
@@ -549,8 +557,9 @@ const TicketsOpen = () => {
             headerText: 'Status', 
             width: '90', 
             textAlign: 'Center',
+            // FIXED: Safe null guard inside Status Template
             template: (props) => {
-                if (!props) return null;
+                if (!props || typeof props !== 'object') return null;
                 const statusLower = (props.status || '').toLowerCase();
                 let badgeStyle = 'bg-gray-100 text-gray-500';
 
@@ -560,7 +569,7 @@ const TicketsOpen = () => {
 
                 return (
                     <span className={`inline-block px-3 py-1 rounded-full text-xs font-bold tracking-wide ${badgeStyle}`}>
-                        {props.status}
+                        {props.status || ''}
                     </span>
                 );
             }
@@ -578,27 +587,30 @@ const TicketsOpen = () => {
             headerText: 'Actions', 
             width: '160', 
             textAlign: 'Center', 
-            template: (props) => (
-                <div className="flex justify-center space-x-2">
-                    <button 
-                        type="button"
-                        className="text-blue-500 text-xl py-1 px-2 font-bold"
-                        onClick={() => handleView(props)}
-                    >
-                        <PiMagnifyingGlassPlusDuotone />
-                    </button>
-                    {canManageTickets() && (
+            template: (props) => {
+                if (!props || typeof props !== 'object') return null;
+                return (
+                    <div className="flex justify-center space-x-2">
                         <button 
                             type="button"
-                            title="Delete Ticket"
-                            className="text-red-500 text-xl py-1 px-3 font-semibold"
-                            onClick={() => handleDelete(props)}
+                            className="text-blue-500 text-xl py-1 px-2 font-bold"
+                            onClick={() => handleView(props)}
                         >
-                            <PiTrashDuotone />
+                            <PiMagnifyingGlassPlusDuotone />
                         </button>
-                    )}
-                </div>
-            ) 
+                        {canManageTickets() && (
+                            <button 
+                                type="button"
+                                title="Delete Ticket"
+                                className="text-red-500 text-xl py-1 px-3 font-semibold"
+                                onClick={() => handleDelete(props)}
+                            >
+                                <PiTrashDuotone />
+                            </button>
+                        )}
+                    </div>
+                );
+            } 
         }
     ];
 
