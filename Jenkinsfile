@@ -4,9 +4,11 @@ pipeline {
     stages {
         stage('1. Pull Code') {
             steps {
-                // 1. Wipe old artifacts and stale cached files before pulling
+                echo 'Cleaning workspace and pulling latest code...'
+                // 1. Clean old files from workspace
                 cleanWs()
-                echo 'Pulling latest code...'
+                // 2. Explicitly pull the repository code back into workspace
+                checkout scm
             }
         }
 
@@ -16,7 +18,6 @@ pipeline {
                 sh 'npm install'
 
                 echo 'Cleaning previous build folder...'
-                // 2. Explicitly remove the old build output directory
                 sh 'rm -rf build'
 
                 echo 'Building React production bundle without source maps...'
