@@ -512,7 +512,7 @@ export const links = [
     title: 'Assignment & Lifecycle',
     links: [
       {
-        name: 'tickets',
+        name: 'tickets-open',
         icon: <PiTicketDuotone />,
       },
     ],
