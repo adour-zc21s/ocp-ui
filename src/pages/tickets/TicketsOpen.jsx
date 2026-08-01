@@ -563,7 +563,7 @@ const TicketsOpen = () => {
         { 
             field: 'dibuatOleh', 
             headerText: 'Created By', 
-            width: '70', 
+            width: '90', 
             textAlign: 'Center',
             template: (props) => {
                 if (!props || !props.dibuatOleh) return '-';
