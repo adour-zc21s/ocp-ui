@@ -560,7 +560,26 @@ const TicketsOpen = () => {
     const ticketsGrid = [
         { field: 'id', headerText: 'ID', width: '55', textAlign: 'Center' },
         { field: 'ticketDetails', headerText: 'Ticket No / Subject', width: '150', textAlign: 'Left', template: TicketTemplate },
-        { field: 'dibuatOleh', headerText: 'Created By', width: '100', textAlign: 'Center' },
+        { 
+            field: 'dibuatOleh', 
+            headerText: 'Created By', 
+            width: '100', 
+            textAlign: 'Center',
+            template: (props) => {
+                if (!props || !props.dibuatOleh) return '-';
+                // Mengambil karakter pertama dan diubah ke huruf besar
+                const firstChar = String(props.dibuatOleh).trim().charAt(0).toUpperCase();
+                
+                return (
+                    <span 
+                        className="inline-flex items-center justify-center w-8 h-8 bg-blue-100 text-blue-700 font-bold rounded-full text-xs"
+                        title={props.dibuatOleh} // Tooltip tetap menampilkan nama lengkap saat di-hover
+                    >
+                        {firstChar}
+                    </span>
+                );
+            }
+        },
         { field: 'departemen', headerText: 'Department', width: '120', textAlign: 'Center' },
         { 
             field: 'status', 
