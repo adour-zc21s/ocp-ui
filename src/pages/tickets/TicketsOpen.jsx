@@ -563,13 +563,13 @@ const TicketsOpen = () => {
         { 
             field: 'dibuatOleh', 
             headerText: 'Created By', 
-            width: '100', 
+            width: '70', 
             textAlign: 'Center',
             template: (props) => {
                 if (!props || !props.dibuatOleh) return '-';
                 // Mengambil karakter pertama dan diubah ke huruf besar
                 const firstChar = String(props.dibuatOleh).trim().charAt(0).toUpperCase();
-                
+
                 return (
                     <span 
                         className="inline-flex items-center justify-center w-8 h-8 bg-blue-100 text-blue-700 font-bold rounded-full text-xs"
