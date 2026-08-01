@@ -163,31 +163,41 @@ const TicketsOpen = () => {
         try {
             setLoading(true);
             const headers = getAuthHeaders();
-            const response = await axios.get(`${REST_API_URL}?page=${currentPage}&size=${currentSize}`, { headers });
-
-            const rawPayload = response.data?.data ?? response.data;
-
-            let rows = [];
+            
+            // Sesuaikan endpoint dengan query parameter status=Open
+            const response = await axios.get(
+                `${REST_API_URL}?status=Open&page=${currentPage}&size=${currentSize}`, 
+                { headers }
+            );
+        
+            const data = response.data;
+        
+            // Extract rows / list data
+            // Spring HATEOAS biasanya menyimpan array di dalam _embedded.tickets / content / result / data
+            let rows = 
+                data?._embedded?.tickets || 
+                data?.content || 
+                data?.result || 
+                data?.data || 
+                (Array.isArray(data) ? data : []);
+        
+            // Extract total count khusus dari struktur "page.totalElements"
             let totalCount = 0;
-
-            if (Array.isArray(rawPayload)) {
-                rows = rawPayload;
-                totalCount = rawPayload.length;
-            } else if (rawPayload && Array.isArray(rawPayload.content)) {
-                rows = rawPayload.content;
-                totalCount = rawPayload.totalElements || rawPayload.content.length;
-            } else if (rawPayload && Array.isArray(rawPayload.result)) {
-                rows = rawPayload.result;
-                totalCount = rawPayload.count || rawPayload.result.length;
+            if (data?.page?.totalElements !== undefined) {
+                totalCount = data.page.totalElements; // <--- Mengambil dari "page": { "totalElements": 8 }
+            } else if (data?.totalElements !== undefined) {
+                totalCount = data.totalElements;
+            } else {
+                totalCount = rows.length;
             }
-
+        
             const cleanRows = rows.filter(item => item !== null && item !== undefined);
-
+        
             setTicketData({
                 result: cleanRows,
-                count: totalCount
+                count: totalCount // Ini akan bernilai 8
             });
-
+        
         } catch (err) {
             console.error('Fetch tickets error:', err);
             setTicketData({ result: [], count: 0 });
