@@ -592,7 +592,7 @@ const TicketsOpen = () => {
                 const statusLower = (props.status || '').toLowerCase();
                 let badgeStyle = 'bg-gray-100 text-gray-500';
 
-                if (statusLower === 'open') badgeStyle = 'bg-green-100 text-green-500';
+                if (statusLower === 'open') badgeStyle = 'bg-green-500 text-white';
                 else if (statusLower === 'pending') badgeStyle = 'bg-amber-100 text-amber-500';
                 else if (statusLower === 'closed') badgeStyle = 'bg-red-100 text-red-500';
 
