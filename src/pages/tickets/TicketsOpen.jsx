@@ -597,7 +597,7 @@ const TicketsOpen = () => {
                 else if (statusLower === 'closed') badgeStyle = 'bg-red-100 text-red-500';
 
                 return (
-                    <span className={`inline-block px-3 py-1 rounded-full text-xs font-bold tracking-wide ${badgeStyle}`}>
+                    <span className={`inline-block px-3 py-1 rounded-full text-xs tracking-wide ${badgeStyle}`}>
                         {props.status || ''}
                     </span>
                 );
