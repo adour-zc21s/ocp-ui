@@ -572,7 +572,7 @@ const TicketsOpen = () => {
 
                 return (
                     <span 
-                        className="inline-flex items-center justify-center w-8 h-8 bg-blue-100 text-blue-700 font-bold rounded-full text-xs"
+                        className="inline-flex items-center justify-center w-8 h-8 bg-green-500 text-white font-bold rounded-full text-xs"
                         title={props.dibuatOleh} // Tooltip tetap menampilkan nama lengkap saat di-hover
                     >
                         {firstChar}
