@@ -481,7 +481,20 @@ export const links = [
       },
     ],
   },
-
+  {
+    title: 'Assignment & Lifecycle',
+    links: [
+      {
+        name: 'Tickets',
+        icon: <PiTicketDuotone />,
+        isDropdown: true,
+        subItems: [
+          { name: 'tickets open', path: 'tickets/open' },
+          // { name: 'tickets closed', path: 'tickets/closed' },
+        ],
+      },
+    ],
+  },
   {
     title: 'Asset Manag',
     links: [
@@ -491,7 +504,7 @@ export const links = [
       },
     ],
   },
-    {
+  {
     title: 'Control Manag',
     links: [
       {
@@ -505,20 +518,6 @@ export const links = [
       {
         name: 'emails',
         icon: <PiEnvelopeSimpleDuotone  />,
-      },
-    ],
-  },
-  {
-    title: 'Assignment & Lifecycle',
-    links: [
-      {
-        name: 'Tickets',
-        icon: <PiTicketDuotone />,
-        isDropdown: true,
-        subItems: [
-          { name: 'tickets open', path: 'tickets/open' },
-          // { name: 'tickets closed', path: 'tickets/closed' },
-        ],
       },
     ],
   },
