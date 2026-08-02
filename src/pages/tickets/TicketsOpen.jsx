@@ -545,13 +545,18 @@ const TicketsOpen = () => {
     const TicketTemplate = (props) => {
         if (!props || typeof props !== 'object') return null;
         const fullDescription = props.deskripsi || props.judul || props.noTiket || '';
+        // Helper to truncate string
+        const truncate = (str, maxLength = 25) => {
+            if (!str) return '';
+            return str.length > maxLength ? `${str.substring(0, maxLength)} . . .` : str;
+        };
         return (
             <div title={fullDescription} style={{ cursor: 'pointer' }}>
                 <div style={{ color: '#444', fontWeight: 'bold', fontSize: '10px' }}>
                     {props.noTiket || ''}
                 </div>
                 <div style={{ fontSize: '12px' }}>
-                    {props.judul || ''}
+                    {truncate(props.judul || '', 25)}
                 </div>
             </div>
         );
@@ -572,7 +577,7 @@ const TicketsOpen = () => {
 
                 return (
                     <span 
-                        className="inline-flex items-center justify-center w-8 h-8 bg-green-500 text-white font-bold rounded-full text-xs"
+                        className="inline-flex items-center justify-center w-8 h-8 bg-green-500 text-white rounded-full text-xs"
                         title={props.dibuatOleh} // Tooltip tetap menampilkan nama lengkap saat di-hover
                     >
                         {firstChar}
@@ -649,7 +654,7 @@ const TicketsOpen = () => {
 
             {/* --- SUMMARY METRIC CARDS --- */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6 mt-4">
-                <div className="p-4 bg-white dark:bg-secondary-dark-bg border border-gray-100 rounded-2xl shadow-sm flex items-center justify-between">
+                <div className="p-4 bg-blue-100 dark:bg-secondary-dark-bg border border-gray-100 rounded-2xl shadow-sm flex items-center justify-between">
                     <div>
                         <p className="text-xs text-gray-400 font-semibold uppercase tracking-wider">Total Tickets</p>
                         <h4 className="text-2xl font-bold text-gray-800 dark:text-gray-100 mt-1">{ticketStats.total}</h4>
@@ -659,7 +664,7 @@ const TicketsOpen = () => {
                     </div>
                 </div>
 
-                <div className="p-4 bg-white dark:bg-secondary-dark-bg border border-gray-100 rounded-2xl shadow-sm flex items-center justify-between">
+                <div className="p-4 bg-green-100 dark:bg-secondary-dark-bg border border-gray-100 rounded-2xl shadow-sm flex items-center justify-between">
                     <div>
                         <p className="text-xs text-gray-400 font-semibold uppercase tracking-wider">Open Tickets</p>
                         <h4 className="text-2xl font-bold text-green-600 mt-1">{ticketStats.open}</h4>
@@ -669,7 +674,7 @@ const TicketsOpen = () => {
                     </div>
                 </div>
 
-                <div className="p-4 bg-white dark:bg-secondary-dark-bg border border-gray-100 rounded-2xl shadow-sm flex items-center justify-between">
+                <div className="p-4 bg-amber-100 dark:bg-secondary-dark-bg border border-gray-100 rounded-2xl shadow-sm flex items-center justify-between">
                     <div>
                         <p className="text-xs text-gray-400 font-semibold uppercase tracking-wider">Pending Tickets</p>
                         <h4 className="text-2xl font-bold text-amber-500 mt-1">{ticketStats.pending}</h4>
@@ -679,7 +684,7 @@ const TicketsOpen = () => {
                     </div>
                 </div>
 
-                <div className="p-4 bg-white dark:bg-secondary-dark-bg border border-gray-100 rounded-2xl shadow-sm flex items-center justify-between">
+                <div className="p-4 bg-red-100 dark:bg-secondary-dark-bg border border-gray-100 rounded-2xl shadow-sm flex items-center justify-between">
                     <div>
                         <p className="text-xs text-gray-400 font-semibold uppercase tracking-wider">Closed Tickets</p>
                         <h4 className="text-2xl font-bold text-red-500 mt-1">{ticketStats.closed}</h4>
