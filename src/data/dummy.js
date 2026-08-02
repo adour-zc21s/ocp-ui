@@ -512,8 +512,13 @@ export const links = [
     title: 'Assignment & Lifecycle',
     links: [
       {
-        name: 'tickets open',
+        name: 'Tickets',
         icon: <PiTicketDuotone />,
+        isDropdown: true,
+        subItems: [
+          { name: 'tickets open', path: 'tickets/open' },
+          // { name: 'tickets closed', path: 'tickets/closed' },
+        ],
       },
     ],
   },

@@ -79,7 +79,9 @@ const App = () => {
 
                         {/* pages  */}
                         <Route path="/devices" element={<Devices />} />
-                        <Route path="/tickets open" element={<TicketsOpen />} />
+                        {/* Ticket Routes */}
+                        <Route path="/tickets/open" element={<TicketsOpen />} />
+                        {/* <Route path="/tickets/closed" element={<TicketsClosed />} /> */}
                         <Route path="/accounts" element={<Accounts />} />
                         <Route path="/emails" element={<Emails />} />
                         <Route path="/orders" element={<Orders />} />
