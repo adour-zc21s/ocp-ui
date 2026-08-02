@@ -26,7 +26,7 @@ import { useNavigate } from 'react-router-dom';
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL; 
 const REST_API_URL = `${API_BASE_URL}/api/v1/tickets`;
 
-const TicketsOpen = () => {
+const TicketsClosed = () => {
     const gridRef = useRef(null);
 
     // Initial state guaranteed to be valid for Syncfusion Grid
@@ -166,7 +166,7 @@ const TicketsOpen = () => {
             
             // Sesuaikan endpoint dengan query parameter status=Open
             const response = await axios.get(
-                `${REST_API_URL}?status=Open&page=${currentPage}&size=${currentSize}`, 
+                `${REST_API_URL}?status=Closed&page=${currentPage}&size=${currentSize}`, 
                 { headers }
             );
         
@@ -650,53 +650,9 @@ const TicketsOpen = () => {
 
     return (
         <div className="m-2 md:m-10 mt-24 p-2 md:p-10 bg-white rounded-xl relative">
-            <Header category="Tickets" title="Ticket Dashboard" />
-
-            {/* --- SUMMARY METRIC CARDS --- */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6 mt-4">
-                <div className="p-4 bg-blue-100 dark:bg-secondary-dark-bg border border-gray-100 rounded-2xl shadow-sm flex items-center justify-between">
-                    <div>
-                        <p className="text-xs text-gray-400 font-semibold uppercase tracking-wider">Total Tickets</p>
-                        <h4 className="text-2xl font-bold text-gray-800 dark:text-gray-100 mt-1">{ticketStats.total}</h4>
-                    </div>
-                    <div className="p-3 bg-blue-50 text-blue-500 rounded-xl text-xl font-bold">
-                        📊
-                    </div>
-                </div>
-
-                <div className="p-4 bg-green-100 dark:bg-secondary-dark-bg border border-gray-100 rounded-2xl shadow-sm flex items-center justify-between">
-                    <div>
-                        <p className="text-xs text-gray-400 font-semibold uppercase tracking-wider">Open Tickets</p>
-                        <h4 className="text-2xl font-bold text-green-600 mt-1">{ticketStats.open}</h4>
-                    </div>
-                    <div className="p-3 bg-green-50 text-green-500 rounded-xl text-xl font-bold">
-                        🟢
-                    </div>
-                </div>
-
-                <div className="p-4 bg-amber-100 dark:bg-secondary-dark-bg border border-gray-100 rounded-2xl shadow-sm flex items-center justify-between">
-                    <div>
-                        <p className="text-xs text-gray-400 font-semibold uppercase tracking-wider">Pending Tickets</p>
-                        <h4 className="text-2xl font-bold text-amber-500 mt-1">{ticketStats.pending}</h4>
-                    </div>
-                    <div className="p-3 bg-amber-50 text-amber-500 rounded-xl text-xl font-bold">
-                        ⏳
-                    </div>
-                </div>
-
-                <div className="p-4 bg-red-100 dark:bg-secondary-dark-bg border border-gray-100 rounded-2xl shadow-sm flex items-center justify-between">
-                    <div>
-                        <p className="text-xs text-gray-400 font-semibold uppercase tracking-wider">Closed Tickets</p>
-                        <h4 className="text-2xl font-bold text-red-500 mt-1">{ticketStats.closed}</h4>
-                    </div>
-                    <div className="p-3 bg-red-50 text-red-500 rounded-xl text-xl font-bold">
-                        🔴
-                    </div>
-                </div>
-            </div>
-
             {/* --- CONTROLS & SEARCH BAR --- */}
             <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
+            <Header category="Tickets" title="Ticket Closed" />
                 <div className="flex flex-wrap items-center gap-2">
                     <form
                         onSubmit={(e) => {
@@ -721,16 +677,6 @@ const TicketsOpen = () => {
                     >
                         <PiEraserDuotone />
                     </button>
-                    {canManageTickets() && (
-                        <button
-                            title="Add Ticket"
-                            type="button"
-                            className="text-green-700 px-3 py-2 rounded-xl text-xs bg-green-200 hover:bg-green-300 transition duration-200"
-                            onClick={handleOpenAddModal}
-                        >
-                            New Ticket
-                        </button>
-                    )}
                 </div>
             </div>
 
@@ -795,30 +741,6 @@ const TicketsOpen = () => {
                                           })
                                         : 'Unknown time'}
                                 </p>
-                            </div>
-
-                            <div className="flex items-center gap-2">
-                                {!isEditingTicket && selectedTicket.status === 'Open' && canManageTickets() && (
-                                    <button
-                                        type="button"
-                                        title="Close Ticket"
-                                        onClick={handleCloseTicket}
-                                        className="px-3 py-2 rounded-lg text-sm bg-red-100 text-red-600 hover:bg-red-200 transition duration-200 font-semibold"
-                                    >
-                                        Close Ticket
-                                    </button>
-                                )}
-
-                                {!isEditingTicket && canManageTickets() && (
-                                    <button
-                                        type="button"
-                                        title="Edit Ticket"
-                                        onClick={handleEditTicket}
-                                        className="px-3 py-2 rounded-lg text-sm text-blue-400 hover:text-blue-600 transition duration-200"
-                                    >
-                                        Edit
-                                    </button>
-                                )}
                             </div>
                         </div>
 
@@ -901,7 +823,7 @@ const TicketsOpen = () => {
                                                 {isCommentsLoading && <span className="text-xs text-gray-500">Loading...</span>}
                                             </div>
                                             {comments.length === 0 ? (
-                                                <p className="text-sm text-gray-500">No comments yet.</p>
+                                                <p className="text-sm text-gray-500">No comments.</p>
                                             ) : (
                                                 <ul className="space-y-3">
                                                     {comments.map((comment, idx) => (
@@ -924,22 +846,6 @@ const TicketsOpen = () => {
                                                 </ul>
                                             )}
                                         </div>
-                                        <form onSubmit={handleAddComment} className="space-y-3">
-                                            <label className="block text-xs text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-1">Add Comment</label>
-                                            <textarea
-                                                value={commentText}
-                                                onChange={(e) => setCommentText(e.target.value)}
-                                                className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                                rows={4}
-                                                placeholder="Write a comment..."
-                                            />
-                                            <button
-                                                type="submit"
-                                                className="px-4 py-2 rounded-xl text-sm text-white bg-blue-500 hover:bg-blue-600 transition duration-200"
-                                            >
-                                                Add Comment
-                                            </button>
-                                        </form>
                                     </div>
                                 </div>
 
@@ -958,122 +864,8 @@ const TicketsOpen = () => {
                     </div>
                 </div>
             )}
-
-            {/* --- ADD MODAL --- */}
-            {isAddModalOpen && (
-                <div className="fixed inset-0 z-[99999] flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm animate-fade-in">
-                    <div className="bg-white dark:bg-secondary-dark-bg w-11/12 md:w-1/2 p-6 rounded-2xl shadow-2xl border border-gray-100 max-h-screen overflow-y-auto">
-                        <div className="flex justify-between items-center border-b pb-3 mb-4">
-                            <h3 className="text-xl font-semibold text-gray-800 dark:text-gray-200">
-                                Add New Ticket
-                            </h3>
-                            <button 
-                                onClick={handleCloseAddModal}
-                                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 text-2xl font-semibold"
-                            >
-                                &times;
-                            </button>
-                        </div>
-
-                        <form onSubmit={handleAddTicket}>
-                            <div className="mb-4">
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div>
-                                        <label className="block text-xs text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-1">
-                                            Judul <span className="text-red-500">*</span>
-                                        </label>
-                                        <input
-                                            type="text"
-                                            name="judul"
-                                            value={formData.judul}
-                                            onChange={handleFormChange}
-                                            className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                            required
-                                            autoComplete="off"
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="block text-xs text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-1">
-                                            Account Manager
-                                        </label>
-                                        <select
-                                            name="emailNotification"
-                                            value={formData.emailNotification}
-                                            onChange={handleFormChange}
-                                            className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                            required
-                                        >
-                                            <option value="">Select an account</option>
-                                            {accounts.map((account) => (
-                                                <option key={account.id || account} value={account.email || account}>
-                                                    {account.name || account}
-                                                </option>
-                                            ))}
-                                        </select>
-                                    </div>
-                                    <div>
-                                        <label className="block text-xs text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-1">
-                                            Departemen <span className="text-red-500">*</span>
-                                        </label>
-                                        <select
-                                            name="departemen"
-                                            value={formData.departemen}
-                                            onChange={handleFormChange}
-                                            className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                            required
-                                        >
-                                            <option value="">Select a department</option>
-                                            {departments.map((dept) => (
-                                                <option key={dept.id || dept} value={dept.name || dept}>
-                                                    {dept.name || dept}
-                                                </option>
-                                            ))}
-                                        </select>
-                                    </div>
-                                    <div>
-                                        <label className="block text-xs text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-1">
-                                            Branch
-                                        </label>
-                                        <select
-                                            name="branch"
-                                            value={formData.branch}
-                                            onChange={handleFormChange}
-                                            className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                            required
-                                        >
-                                            <option value="">Select a branch</option>
-                                            {branches.map((branch) => (
-                                                <option key={branch.id || branch} value={branch.name || branch}>
-                                                    {branch.name || branch}
-                                                </option>
-                                            ))}
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="flex justify-end gap-3 mt-6 border-t pt-3">
-                                <button
-                                    type="button"
-                                    className="px-4 py-2 rounded-xl text-sm bg-gray-300 text-gray-800 hover:bg-gray-400 transition duration-200"
-                                    onClick={handleCloseAddModal}
-                                >
-                                    Cancel
-                                </button>
-                                <button
-                                    type="submit"
-                                    style={{ backgroundColor: currentColor }}
-                                    className="px-5 py-2 rounded-xl text-sm text-white hover:opacity-90 transition duration-200"
-                                >
-                                    Add Ticket
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            )}
         </div>
     );
 };
 
-export default TicketsOpen;
+export default TicketsClosed;

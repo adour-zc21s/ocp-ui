@@ -6,6 +6,7 @@ import { TooltipComponent } from '@syncfusion/ej2-react-popups';
 import { Navbar, Footer, Sidebar, ThemeSettings, ProtectedRoute } from './components';
 import { Login, Devices, Items, Accounts, Branches, Ecommerce, Orders, Calendar, Employees, Stacked, Pyramid, Kanban, Line, Area, Bar, Pie, Financial, ColorPicker, ColorMapping, Editor, Emails } from './pages';
 import TicketsOpen from './pages/tickets/TicketsOpen';
+import TicketsClosed from './pages/tickets/TicketsClosed';
 import './App.css';
 
 import { useStateContext } from './contexts/ContextProvider';
@@ -81,7 +82,7 @@ const App = () => {
                         <Route path="/devices" element={<Devices />} />
                         {/* Ticket Routes */}
                         <Route path="/tickets/open" element={<TicketsOpen />} />
-                        {/* <Route path="/tickets/closed" element={<TicketsClosed />} /> */}
+                        <Route path="/tickets/closed" element={<TicketsClosed />} />
                         <Route path="/accounts" element={<Accounts />} />
                         <Route path="/emails" element={<Emails />} />
                         <Route path="/orders" element={<Orders />} />

@@ -7,7 +7,7 @@ import { IoMdContacts } from 'react-icons/io';
 import { RiStockLine } from 'react-icons/ri';
 import { MdOutlineSupervisorAccount } from 'react-icons/md';
 
-import { PiTicketDuotone, PiListNumbersDuotone, PiUsersThreeDuotone, PiChartLineUpDuotone, PiDevicesDuotone, PiGitBranchDuotone, PiIdentificationCardDuotone, PiEnvelopeSimpleDuotone  } from 'react-icons/pi';
+import { PiGearLight, PiTicketDuotone, PiListNumbersDuotone, PiUsersThreeDuotone, PiChartLineUpDuotone, PiDevicesDuotone, PiGitBranchDuotone, PiIdentificationCardDuotone, PiEnvelopeSimpleDuotone  } from 'react-icons/pi';
 
 import { HiOutlineRefresh } from 'react-icons/hi';
 import { TiTick } from 'react-icons/ti';
@@ -490,7 +490,7 @@ export const links = [
         isDropdown: true,
         subItems: [
           { name: 'tickets open', path: 'tickets/open' },
-          // { name: 'tickets closed', path: 'tickets/closed' },
+          { name: 'tickets closed', path: 'tickets/closed' },
         ],
       },
     ],
@@ -517,7 +517,7 @@ export const links = [
       },
       {
         name: 'emails',
-        icon: <PiEnvelopeSimpleDuotone  />,
+        icon: <PiGearLight  />,
       },
     ],
   },
