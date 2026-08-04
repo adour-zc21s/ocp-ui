@@ -436,7 +436,7 @@ const TicketsOpen = () => {
     const handleCloseTicket = async () => {
         if (!selectedTicket?.id || !ensureAdminAccess('close tickets')) return;
         if (!window.confirm(`Are you sure you want to close ticket: ${selectedTicket.noTiket}?`)) return;
-        
+
         try {
             setLoading(true); // 1. Explicitly mark loading active
             const headers = getAuthHeaders();
@@ -444,26 +444,26 @@ const TicketsOpen = () => {
                 setLoading(false);
                 return;
             }
-        
+
             // 2. Perform the close API call
             await axios.put(`${REST_API_URL}/${encodeURIComponent(selectedTicket.id)}/close`, {}, { headers });
-        
+
             // 3. Close the modal first so the DOM unmounts cleanly
             handleCloseModal();
-        
+
             alert('Ticket closed successfully and notification email sent.');
-        
+
             // 4. Re-fetch grid data & stats in parallel
             await Promise.all([
                 fetchTickets(page, pageSize),
                 fetchTicketStats()
             ]);
-        
+
             // 5. Refresh Syncfusion grid instance safely if attached
             if (gridRef.current) {
                 gridRef.current.refresh();
             }
-        
+
         } catch (err) {
             if (!handleAuthError(err)) {
                 alert(err.response?.data?.message || 'Failed to close ticket');
@@ -657,7 +657,7 @@ const TicketsOpen = () => {
 
     return (
         <div className="m-2 md:m-10 mt-24 p-2 md:p-10 bg-white rounded-xl relative">
-            <Header category="Tickets" title="Ticket Dashboard" />
+            <Header category="Page" title="Ticket Dashboard" />
 
             {/* --- SUMMARY METRIC CARDS --- */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6 mt-4">

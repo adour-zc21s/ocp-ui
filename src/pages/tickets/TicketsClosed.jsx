@@ -652,7 +652,7 @@ const TicketsClosed = () => {
         <div className="m-2 md:m-10 mt-24 p-2 md:p-10 bg-white rounded-xl relative">
             {/* --- CONTROLS & SEARCH BAR --- */}
             <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
-            <Header category="Tickets" title="Ticket Closed" />
+            <Header category="Page" title="Ticket Closed" />
                 <div className="flex flex-wrap items-center gap-2">
                     <form
                         onSubmit={(e) => {
