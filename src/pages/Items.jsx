@@ -5,6 +5,11 @@ import { contextMenuItems } from '../data/dummy';
 import { Header } from '../components';
 import { useStateContext } from '../contexts/ContextProvider';
 import { useNavigate } from 'react-router-dom';
+import { 
+    PiMagnifyingGlassPlusDuotone, 
+    PiTrashDuotone, 
+    PiEraserDuotone 
+} from "react-icons/pi";
 
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL; 
 const REST_API_URL = `${API_BASE_URL}/api/v1/order/items`;
@@ -253,18 +258,17 @@ const Items = () => {
 
 
     const itemsGrid = [
-        { field: 'id', headerText: 'Item Code', width: '150', textAlign: 'Center' },
-        { field: 'name', headerText: 'Name', width: '200', textAlign: 'Center' },
-        // { field: 'description', headerText: 'Description', width: '150', textAlign: 'Center' },
-        { field: 'stockQuantity', headerText: 'Quantity', width: '150', textAlign: 'Center' },
+        { field: 'id', headerText: 'Code', width: '55', textAlign: 'Center' },
+        { field: 'name', headerText: 'Name', width: '200', textAlign: 'Left' },
         // add currency formatting for price
         { 
           field: 'price', 
           headerText: 'Price', 
           width: '150', 
           textAlign: 'Center', 
-          format: 'Rp#,##0',
+          format: 'IDR#,##0',
         },
+        { field: 'description', headerText: 'Description', width: '200', textAlign: 'Left' },
         { 
             field: 'actions', 
             headerText: 'Actions', 
@@ -274,18 +278,10 @@ const Items = () => {
                 <div className="flex justify-center space-x-2">
                     <button
                         type="button"
-                        style={{ backgroundColor: currentColor }}
-                        className="text-white text-xs py-1 px-3 rounded-xl hover:opacity-80 transition duration-200"
+                        className="text-blue-500 text-xl py-1 px-2 font-bold"
                         onClick={() => handleView(props)}
                     >
-                        View
-                    </button>
-                    <button
-                        type="button"
-                        className="bg-red-600 text-white text-xs py-1 px-3 rounded-xl hover:bg-red-700 transition duration-200"
-                        onClick={() => handleDelete(props)}
-                    >
-                        Delete
+                        <PiMagnifyingGlassPlusDuotone />
                     </button>
                 </div>
             ) 
@@ -305,14 +301,6 @@ const Items = () => {
                         onChange={handleSearchInputChange}
                         className="px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
                     />
-                    <button
-                        type="button"
-                        onClick={handleSearchById}
-                        className="px-3 py-2 rounded-lg text-sm text-white"
-                        style={{ backgroundColor: currentColor }}
-                    >
-                        Search
-                    </button>
                     <button
                         type="button"
                         onClick={handleClearSearch}
