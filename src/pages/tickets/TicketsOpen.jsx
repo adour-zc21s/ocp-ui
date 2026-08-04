@@ -433,36 +433,43 @@ const TicketsOpen = () => {
         fetchTicketStats();
     };
 
-    // FIXED: Added setTimeout to handle grid unmounting race condition cleanly
     const handleCloseTicket = async () => {
         if (!selectedTicket?.id || !ensureAdminAccess('close tickets')) return;
         if (!window.confirm(`Are you sure you want to close ticket: ${selectedTicket.noTiket}?`)) return;
-
+        
         try {
+            setLoading(true); // 1. Explicitly mark loading active
             const headers = getAuthHeaders();
-            if (!headers) return;
-
+            if (!headers) {
+                setLoading(false);
+                return;
+            }
+        
+            // 2. Perform the close API call
             await axios.put(`${REST_API_URL}/${encodeURIComponent(selectedTicket.id)}/close`, {}, { headers });
-
+        
+            // 3. Close the modal first so the DOM unmounts cleanly
+            handleCloseModal();
+        
             alert('Ticket closed successfully and notification email sent.');
-
-            // Refresh grid and stats
-            await fetchTickets(page, pageSize);
-            await fetchTicketStats();
-
+        
+            // 4. Re-fetch grid data & stats in parallel
+            await Promise.all([
+                fetchTickets(page, pageSize),
+                fetchTicketStats()
+            ]);
+        
+            // 5. Refresh Syncfusion grid instance safely if attached
             if (gridRef.current) {
                 gridRef.current.refresh();
             }
-
-            // Defer closing modal to let Syncfusion finish event loop
-            setTimeout(() => {
-                handleCloseModal();
-            }, 50);
-
+        
         } catch (err) {
             if (!handleAuthError(err)) {
                 alert(err.response?.data?.message || 'Failed to close ticket');
             }
+        } finally {
+            setLoading(false); // 6. Ensure loading overlay is always turned off
         }
     };
 
