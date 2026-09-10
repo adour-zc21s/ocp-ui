@@ -25,7 +25,7 @@ loginAxios.interceptors.response.use(
 );
 
 const Login = () => {
-  const [email, setEmail] = useState('');
+  const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -63,20 +63,17 @@ const Login = () => {
     e.preventDefault();
     setError('');
 
-    if (!email || !password) {
-      setError('Please enter both email and password.');
-      return;
-    }
+    const trimmedIdentifier = identifier.trim();
 
-    if (!/\S+@\S+\.\S+/.test(email)) {
-      setError('Please enter a valid email address.');
+    if (!trimmedIdentifier || !password) {
+      setError('Please enter both username/email and password.');
       return;
     }
 
     setLoading(true);
 
     try {
-      const requestPayload = { email, password };
+      const requestPayload = { identifier: trimmedIdentifier, password };
 
       console.log('Sending login request to:', REST_API_URL);
       console.log('Payload:', requestPayload);
@@ -126,7 +123,7 @@ const Login = () => {
       let errorMessage = 'Login failed. Please try again.';
 
       if (err.response?.status === 401 || err.response?.status === 400) {
-        errorMessage = err.response?.data?.message || 'Invalid email or password.';
+        errorMessage = err.response?.data?.message || 'Invalid identifier or password.';
       } else if (err.response?.status === 404) {
         errorMessage = 'Server endpoint not found. Check the API URL.';
       } else if (err.response?.status === 500) {
@@ -162,16 +159,16 @@ const Login = () => {
 
         <form onSubmit={handleLogin}>
           <div className="mb-5">
-            <label htmlFor="email" className="block text-gray-700 text-sm font-medium mb-2">
-              <span className="block mb-2">Email Address</span>
+            <label htmlFor="identifier" className="block text-gray-700 text-sm font-medium mb-2">
+              <span className="block mb-2">Username or Email</span>
               <div className="flex items-center border border-gray-300 rounded-lg px-3 py-2 focus-within:border-blue-500 focus-within:ring-1 focus-within:ring-blue-500">
                 <FiMail className="text-gray-400 mr-2" />
                 <input
-                  id="email"
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="Enter your email"
+                  id="identifier"
+                  type="text"
+                  value={identifier}
+                  onChange={(e) => setIdentifier(e.target.value)}
+                  placeholder="Enter your username or email"
                   className="w-full bg-transparent outline-none text-gray-700"
                   required
                 />
