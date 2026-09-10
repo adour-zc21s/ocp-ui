@@ -32,6 +32,7 @@ const Devices = () => {
         serialNumber: '',
         ipAddress: '',
         macAddress: '',
+        password: '',
         user: '',
         branchName: '',
         description: '',
@@ -46,6 +47,7 @@ const Devices = () => {
         serialNumber: '',
         ipAddress: '',
         macAddress: '',
+        password: '',
         user: '',
         branchName: '',
         description: '',
@@ -168,6 +170,7 @@ const Devices = () => {
         ipAddress: '',
         macAddress: '',
         user: '',
+        password: '',
         branchName: '',
         description: '',
         purchaseDate: '',
@@ -182,6 +185,7 @@ const Devices = () => {
         ipAddress: device.ipAddress || '',
         macAddress: device.macAddress || '',
         user: device.user || '',
+        password: device.password || '',
         branchName: device.branchName || '',
         description: device.description || '',
         purchaseDate: device.purchaseDate || '',
@@ -622,12 +626,12 @@ const Devices = () => {
                                         </select>
                                     </div>
                                     <div>
-                                        <label className="block text-xs text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-1">Manufacture <span className="text-red-500">*</span></label>
-                                        <input type="text" name="manufacture" value={editFormData.manufacture} onChange={handleEditFormChange} className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500" required autoComplete="off" />
+                                        <label className="block text-xs text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-1">Password <span className="text-red-500">*</span></label>
+                                        <input type="text" name="password" value={editFormData.password} onChange={handleEditFormChange} className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500" required autoComplete="off" />
                                     </div>
                                     <div>
-                                        <label className="block text-xs text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-1">Serial Number</label>
-                                        <input type="text" name="serialNumber" value={editFormData.serialNumber} onChange={handleEditFormChange} className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500" autoComplete="off" />
+                                        <label className="block text-xs text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-1">Manufacture <span className="text-red-500">*</span></label>
+                                        <input type="text" name="manufacture" value={editFormData.manufacture} onChange={handleEditFormChange} className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500" required autoComplete="off" />
                                     </div>
                                     <div>
                                         <label className="block text-xs text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-1">IP Address</label>
