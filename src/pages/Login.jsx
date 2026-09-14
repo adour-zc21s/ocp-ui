@@ -168,7 +168,7 @@ const Login = () => {
                   type="text"
                   value={identifier}
                   onChange={(e) => setIdentifier(e.target.value)}
-                  placeholder="Enter your username or email.."
+                  placeholder="Enter your username or email"
                   className="w-full bg-transparent outline-none text-gray-700"
                   required
                 />
