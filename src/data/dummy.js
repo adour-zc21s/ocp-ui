@@ -505,6 +505,17 @@ export const links = [
     ],
   },
   {
+    title: 'Troubleshooting',
+    compact: true,
+    links: [
+      {
+        name: 'Guide & Troubleshoot',
+        path: 'troubleshooting',
+        icon: <PiGearLight />,
+      },
+    ],
+  },
+  {
     title: 'Control Manag',
     links: [
       {

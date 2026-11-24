@@ -57,9 +57,9 @@ const Sidebar = () => {
           </div>
           <div className="flex-1 overflow-auto">
             {links.map((item) => (
-              <div key={item.title} className="mb-6">
-                <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider px-1 mb-3">{item.title}</p>
-                <div className="rounded-[16px] bg-white dark:bg-[#111827] p-2 space-y-2">
+              <div key={item.title} className={item.compact ? 'mb-3' : 'mb-6'}>
+                <p className={`text-xs font-semibold text-gray-400 uppercase tracking-wider px-1 ${item.compact ? 'mb-1' : 'mb-3'}`}>{item.title}</p>
+                <div className={`rounded-[16px] bg-white dark:bg-[#111827] ${item.compact ? 'p-1 space-y-1' : 'p-2 space-y-2'}`}>
                   {item.links.map((link) => (
                     <div key={link.name}>
                       {link.isDropdown ? (
@@ -101,12 +101,12 @@ const Sidebar = () => {
                       ) : (
                         /* --- REGULAR SINGLE LINK --- */
                         <NavLink
-                          to={`/${link.name}`}
+                          to={`/${link.path || link.name}`}
                           onClick={handleCloseSideBar}
                           style={({ isActive }) => ({
                             backgroundColor: isActive ? currentColor : '',
                           })}
-                          className={({ isActive }) => (isActive ? activeLink : normalLink)}
+                          className={({ isActive }) => `${isActive ? activeLink : normalLink} ${item.compact ? 'py-2' : ''}`}
                         >
                           <span className="text-lg">{link.icon}</span>
                           <span className="capitalize">{link.name}</span>
