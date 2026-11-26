@@ -42,7 +42,7 @@ const Sidebar = () => {
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-green-500 text-white">
                 <ImLeaf />
               </div>
-              <span>OCP Dash</span>
+              <span>RIEK Dash</span>
             </Link>
             <TooltipComponent content="Menu" position="BottomCenter">
               <button
